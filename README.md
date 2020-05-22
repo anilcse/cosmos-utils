@@ -2,6 +2,13 @@
 
 ## Test an on-chain upgrade
 
+Clone the repo
+```sh
+git clone https://github.com/anilCSE/cosmos-testnet-utils.git
+
+cd cosmos-testnet-utils
+```
+
 #### Set executable permissions
 ```sh
 sudo chmod +x ./scripts/testnet-setup-plan-upgrade.sh
