@@ -31,7 +31,7 @@ Ensure you execute this script only after hitting the upgrade height (i.e., 80 a
 Check the `akashd` status to confirm if the chain is waiting for the upgrade. 
  `sudo service akashd status`
 
- You should see a message like: `UPGRADE "test2-upgrade" NEEDED at height: 200:  module=main`
+ You should see a message like: `UPGRADE "test2-upgrade" NEEDED at height: 80:  module=main`
 
 ```sh
 ./scripts/handle-upgrade.sh
