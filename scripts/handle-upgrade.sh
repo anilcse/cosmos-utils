@@ -1,32 +1,24 @@
 #/bin/sh
 
-export DENOM=akt
-export CHAINID=testchain
-export NODE=http://localhost:26657
-export DAEMON=akashd
-export CLI=akashctl
-
-echo "---- Querying chain status------"
-akashctl status --chain-id $CHAINID
-
-echo "----akashd current version------"
-akashd version --long
+echo "----$DAEMON current version------"
+$DAEMON version
 
 echo "----Install the upgrade release------"
-cd $GOPATH/src/github.com/ovrclk/akash
-git fetch && git checkout akhil/test-upgrade
-make install
+cd ~/go/src/$GH_URL
+git fetch && git checkout $UPGRADE_VERSION
+EXPERIMENTAL=true make install
 
-echo "----akashd version------"
-akashd version --long
+echo "----$DAEMON version------"
+$DAEMON version
 
 echo "----handle upgrade------"
 sudo service $DAEMON stop
-sudo service $DAEMON start
 
-sleep 10
+$DAEMON start
 
-echo "---- Querying chain status------"
-akashctl status --chain-id $CHAINID
+#sleep 20
 
-echo "-----Upgraded successfully-----"
+#echo "---- Querying chain status------"
+#$CLI status --chain-id $CHAINID
+
+#echo "-----Upgraded successfully-----"

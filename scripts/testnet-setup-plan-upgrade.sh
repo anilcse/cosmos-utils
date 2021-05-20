@@ -1,64 +1,84 @@
 #/bin/sh
 
-export DENOM=akt
-export CHAINID=testchain
-export VOTING_PERIOD=120000000000 #2 minutes
-export NODE=http://localhost:26657
-export DAEMON=akashd
-export CLI=akashctl
-export UPGRADE_BLOCK_HEIGHT=80
-export UPGRADE_TITLE=test2-upgrade
-export TESTFAUCETKEY=testkeyfaucet
-export TESTVALKEY=testkeyvalidator
+command_exists () {
+    type "$1" &> /dev/null ;
+}
 
-echo "--------Installing pre-requisistes---------"
-sudo apt update
-sudo apt install build-essential git -y
+if command_exists go ; then
+    echo "Golang is already installed"
+else
+  echo "Install dependencies"
+  sudo apt update
+  sudo apt install build-essential jq -y
 
-# Install latest go version https://golang.org/doc/install
-wget https://dl.google.com/go/go1.14.linux-amd64.tar.gz
-sudo tar -C /usr/local -xzf go1.14.linux-amd64.tar.gz
+  wget https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz
+  tar -xvf go1.15.2.linux-amd64.tar.gz
+  sudo mv go /usr/local
 
-# Add $GOPATH, $GOBIN and both to $PATH
-echo "" >> ~/.profile
-echo 'export GOPATH=$HOME/go' >> ~/.profile
-echo 'export GOBIN=$GOPATH/bin' >> ~/.profile
-echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >> ~/.profile
-source ~/.profile
+  echo "" >> ~/.profile
+  echo 'export GOPATH=$HOME/go' >> ~/.profile
+  echo 'export GOROOT=/usr/local/go' >> ~/.profile
+  echo 'export GOBIN=$GOPATH/bin' >> ~/.profile
+  echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >> ~/.profile
 
-echo "---------Install Akash---------"
-go get github.com/ovrclk/akash
-cd $GOPATH/src/github.com/ovrclk/akash
+  #source ~/.profile
+  . ~/.profile
+
+  go version
+fi
+
+echo "--------- Install $DAEMON ---------"
+go get $GH_URL
+cd ~/go/src/$GH_URL
+git fetch && git checkout $CHAIN_VERSION
 make install
 
 # check version
-akashd version --long
+$DAEMON version --long
 
-echo "----------Create test keys-----------"
-## This script assumes following keys to be created before hand. Create keys if not present.
-$CLI keys add $TESTVALKEY --keyring-backend test
-$CLI keys add $TESTFAUCETKEY --keyring-backend test
-
+#echo "----------Create test keys-----------"
 
 echo "---------Initializing the chain ($CHAINID)---------"
-rm -rf ~/.$DAEMON
+
+$DAEMON unsafe-reset-all
+rm -rf ~/.$DAEMON/config/gen*
 
 $DAEMON init --chain-id $CHAINID $CHAINID
 
 echo "----------Update chain config---------"
 
-sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.$DAEMON/config/config.toml
-sed -i "s/172800000000000/$VOTING_PERIOD/g" ~/.$DAEMON/config/genesis.json
-sed -i "s/stake/$DENOM/g" ~/.$DAEMON/config/genesis.json
-sed -i 's/"signed_blocks_window": "100"/"signed_blocks_window": "10"/g' ~/.$DAEMON/config/genesis.json #10 blocks slashing window to test slashing
-sed -i 's/pruning = "syncable"/pruning = "nothing"/g' ~/.$DAEMON/config/app.toml
+sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME/config/genesis.json
+#sed -i 's/"signed_blocks_window": "100"/"signed_blocks_window": "10"/g' $DAEMON_HOME/config/genesis.json #10 blocks slashing window to test slashing
+
+$DAEMON keys add w1 --keyring-backend test
+$DAEMON keys add w2 --keyring-backend test
+$DAEMON keys add w3 --keyring-backend test
+$DAEMON keys add w4 --keyring-backend test
+$DAEMON keys add w5 --keyring-backend test
+$DAEMON keys add validator --keyring-backend test
 
 echo "----------Genesis creation---------"
+
 # Now its time to construct the genesis file
-$DAEMON add-genesis-account $($CLI keys show $TESTVALKEY -a --keyring-backend test) 100000000000$DENOM
-$DAEMON add-genesis-account $($CLI keys show $TESTFAUCETKEY -a --keyring-backend test) 10000000000000$DENOM
-$DAEMON gentx --name $TESTVALKEY --amount 90000000000$DENOM  --keyring-backend test
+CURRENT_TIME_SECONDS=$(( date +%s ))
+VESTING_STARTTIME=$(( $CURRENT_TIME_SECONDS + 10 ))
+VESTING_ENDTIME=$(( $CURRENT_TIME_SECONDS + 10000 ))
+
+$DAEMON add-genesis-account w1 --keyring-backend test 1000000000000$DENOM --vesting-amount 1000000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON add-genesis-account w5 1000000000000$DENOM  --keyring-backend test
+$DAEMON add-genesis-account validator 1000000000000$DENOM  --keyring-backend test
+$DAEMON add-genesis-account faucet 1000000000000$DENOM  --keyring-backend test
+$DAEMON add-genesis-account w2 --keyring-backend test 1000000000000$DENOM --vesting-amount 100000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON add-genesis-account w3 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON add-genesis-account w4 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+
+$DAEMON gentx validator 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test
 $DAEMON collect-gentxs
+
+VAL_OPR_ADDRESS=$($CLI keys show validator -a --bech val --keyring-backend test)
 
 echo "---------Creating system file---------"
 
@@ -68,7 +88,7 @@ After=network.target
 [Service]
 Type=simple
 User=$USER
-ExecStart=$(which akashd) start --pruning=nothing
+ExecStart=$(which $DAEMON) start
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
@@ -78,39 +98,53 @@ WantedBy=multi-user.target
 
 sudo mv $DAEMON.service /lib/systemd/system/$DAEMON.service
 
-echo "-------Start akashd service-------"
+echo "-------Start $DAEMON service-------"
 
 sudo -S systemctl daemon-reload
 sudo -S systemctl start $DAEMON
 
-sleep 10s
+sleep 20s
 
 echo "Checking chain status"
 
-$CLI status --chain-id $CHAINID
+$CLI status
 
 echo 
 echo
 
+sleep 10s
+
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+
+$CLI query staking validators -o json
+
 echo "All set!!! Let's try some upgrade"
 
 echo "Submit upgrade proposal"
-$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT + 0)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from $TESTFAUCETKEY --chain-id $CHAINID --node $NODE -y  --keyring-backend test
+$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test
 sleep 7
 echo
 echo "Query proposal"
-$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE --trust-node
+$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
 echo
 echo "Vote for proposal"
-$CLI tx gov vote 1 yes --from $TESTVALKEY --chain-id $CHAINID --node $NODE -y  --keyring-backend test
-$CLI tx gov vote 1 yes --from $TESTFAUCETKEY --chain-id $CHAINID --node $NODE -y  --keyring-backend test
+$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test
+$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test
 sleep 10
 echo
 echo "Query proposal votes"
-$CLI query gov votes 1 --chain-id $CHAINID  -o json --node $NODE --trust-node
+$CLI query gov votes 1 --chain-id $CHAINID  -o json --node $NODE
 echo
 echo "Query proposal"
-$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE --trust-node
-echo "Your proposal submitted successfully. The chain will halt for upgrade at height: $((CURRENT_BLOCK_HEIGHT))"
+$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
+echo "Your proposal submitted successfully. The chain will halt for upgrade at height: $((UPGRADE_BLOCK_HEIGHT))"
 echo "Just wait and check service logs for UPGRADE NEEDED message and then execute handle_upgrade.sh"
-
+echo
+echo "####################################################"
+echo "You can view logs by executing `journalctl -u $DAEMON -f`"
