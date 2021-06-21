@@ -361,6 +361,7 @@ type (
 		LCD             string        `json:"lcd" bson:"lcd"`
 		Denom           string        `json:"denom" bson:"denom"`
 		Balance         string        `json:"balance" bson:"balance"`
+		DialyBalance    string        `json:"daily_balance" bson:"daily_balance"`
 		Threshold       string        `json:"thresholdAlert" bson:"threshold_alert"`
 	}
 )

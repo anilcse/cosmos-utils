@@ -63,28 +63,35 @@ type (
 		AccBalanceChangeThreshold float64 `mapstructure:"acc_balance_change_threshold"`
 	}
 
+	// RegularStatusAlerts defines time-slots to receive validator status alerts
+	RegularStatusAlerts struct {
+		// AlertTimings is the array of time slots to send validator status alerts
+		AlertTimings []string `mapstructure:"alert_timings"`
+	}
+
 	// Config defines all the app configurations
 	Config struct {
-		ValidatorRPCEndpoint string            `mapstructure:"validator_rpc_endpoint"`
-		ValOperatorAddress   string            `mapstructure:"val_operator_addr"`
-		ValidatorHexAddress  string            `mapstructure:"validator_hex_addr"`
-		LCDEndpoint          string            `mapstructure:"lcd_endpoint"`
-		Denom                string            `mapstructure:"denom"`
-		Telegram             TelegramBotConfig `mapstructure:"telegram"`
-		SendGrid             EmailConfig       `mapstructure:"sendgrid"`
-		ExternalRPC          string            `mapstructure:"external_rpc"`
-		AlertTime1           string            `mapstructure:"alert_time1"`
-		AlertTime2           string            `mapstructure:"alert_time2"`
-		ValidatorName        string            `mapstructure:"validator_name"`
-		InfluxDB             InfluxDB          `mapstructure:"influxdb"`
-		Scraper              Scraper           `mapstructure:"scraper"`
-		BlockDiffAlert       BlockDiffAlert    `mapstructure:"block_diff_alert"`
-		VotingPowerAlert     VotingPowerAlert  `mapstructure:"voting_power_alert"`
-		PeersAlert           PeersAlert        `mapstructure:"Peers_alert"`
-		AccountAddress       string            `mapstructure:"account_addr"`
-		BalanceChangeAlerts  string            `mapstructure:"balance_change_alert"`
-		MissedBlocksAlert    MissedBlocksAlert `mapstructure:"missed_blocks_alert"`
-		DelegationAlerts     DelegationAlerts  `mapstructure:"delegation_alerts"`
+		ValidatorRPCEndpoint string              `mapstructure:"validator_rpc_endpoint"`
+		ValOperatorAddress   string              `mapstructure:"val_operator_addr"`
+		ValidatorHexAddress  string              `mapstructure:"validator_hex_addr"`
+		LCDEndpoint          string              `mapstructure:"lcd_endpoint"`
+		Denom                string              `mapstructure:"denom"`
+		Telegram             TelegramBotConfig   `mapstructure:"telegram"`
+		SendGrid             EmailConfig         `mapstructure:"sendgrid"`
+		ExternalRPC          string              `mapstructure:"external_rpc"`
+		AlertTime1           string              `mapstructure:"alert_time1"`
+		AlertTime2           string              `mapstructure:"alert_time2"`
+		ValidatorName        string              `mapstructure:"validator_name"`
+		InfluxDB             InfluxDB            `mapstructure:"influxdb"`
+		Scraper              Scraper             `mapstructure:"scraper"`
+		BlockDiffAlert       BlockDiffAlert      `mapstructure:"block_diff_alert"`
+		VotingPowerAlert     VotingPowerAlert    `mapstructure:"voting_power_alert"`
+		PeersAlert           PeersAlert          `mapstructure:"Peers_alert"`
+		AccountAddress       string              `mapstructure:"account_addr"`
+		BalanceChangeAlerts  string              `mapstructure:"balance_change_alert"`
+		MissedBlocksAlert    MissedBlocksAlert   `mapstructure:"missed_blocks_alert"`
+		DelegationAlerts     DelegationAlerts    `mapstructure:"delegation_alerts"`
+		RegularStatusAlerts  RegularStatusAlerts `mapstructure:"regular_status_alerts"`
 	}
 )
 

@@ -22,7 +22,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	// Calling go routine to send alerts for missed blocks
+	// Manage telegram based commands
 	go func() {
 		for {
 			targets.TelegramAlerting(cfg)
@@ -30,13 +30,22 @@ func main() {
 		}
 	}()
 
-	// Calling go routine to send alert about validator status
+	// Calling go routine to send alert about balance changes
 	go func() {
 		for {
 			if err := targets.BalanceChangeAlerts(cfg); err != nil {
-				fmt.Println("Error while sending jailed alerts", err)
+				fmt.Println("Error while sending balance change threshold based alerts", err)
 			}
 			time.Sleep(2 * time.Second)
+		}
+	}()
+
+	go func() {
+		for {
+			if err := targets.DailyBalAlerts(cfg); err != nil {
+				fmt.Println("Error while sending daily balance alerts", err)
+			}
+			time.Sleep(60 * time.Second)
 		}
 	}()
 
