@@ -92,13 +92,13 @@ func TelegramAlerting(cfg *config.Config) {
 func GetHelp() string {
 	msg := fmt.Sprintf("List of available commands\n")
 
-	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\nformat: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>")
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n")
 
-	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\nformat: /get_details accountAddress")
+	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n format: /get_details <accountAddress>\n\n")
 
-	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n/delete_address accountNickName accountAddress")
+	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n format: /delete_address <accountNickName> <accountAddress>\n\n")
 
-	msg = msg + fmt.Sprintf("/update_threshold - Update account balance alerting thershold\n/update_threshold accountNickName accountAddress threshold")
+	msg = msg + fmt.Sprintf("/update_threshold - Update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
 	msg = msg + "/list - list out the available commands"
 
 	return msg
