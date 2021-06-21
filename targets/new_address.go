@@ -41,7 +41,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Threshold:       threshold,
 		}
 
-		err := InsertNewAddress(address, "relayer")
+		err := InsertNewAddress(address, cfg.MongoDB.Database)
 		if err != nil {
 			log.Printf("Error while inserting new address details : %v", err)
 			return err.Error()
@@ -56,7 +56,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Threshold:       threshold,
 		}
 
-		err = AddAccBalance(balance, "relayer")
+		err = AddAccBalance(balance, cfg.MongoDB.Database)
 		if err != nil {
 			log.Printf("Error while adding acc address details : %v", err)
 			return err.Error()

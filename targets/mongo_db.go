@@ -20,7 +20,7 @@ func InitDB(cfg *config.Config) {
 		Timeout:  30 * time.Second,
 		Username: "",
 		Password: "",
-		Database: "relayer",
+		Database: cfg.MongoDB.Database,
 	}
 
 	MongoSession, err = mgo.DialWithInfo(MongoDbUrl)

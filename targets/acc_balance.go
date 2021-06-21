@@ -18,7 +18,7 @@ import (
 
 func BalanceChangeAlerts(cfg *config.Config) error {
 	var ops HTTPOptions
-	addresses, err := GetAllAddress(bson.M{}, bson.M{}, "relayer")
+	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 
 	for _, add := range addresses {
 		if add.NetworkName == "akash" || add.NetworkName == "cosmos" || add.NetworkName == "osmosis" {
@@ -64,7 +64,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 					},
 				}
 
-				err = UpdateAccBalance(query, updateObj, "relayer")
+				err = UpdateAccBalance(query, updateObj, cfg.MongoDB.Database)
 				if err != nil {
 					log.Printf("Error while updating acc balance")
 				}
@@ -93,7 +93,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 
 	for _, statusAlertTime := range alertsArray {
 		if currentTime == statusAlertTime {
-			addresses, err := GetAllAddress(bson.M{}, bson.M{}, "relayer")
+			addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 
 			msg := fmt.Sprintf("Daily balance update: \n")
 			for _, add := range addresses {
@@ -114,7 +114,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 							"network_name":    add.NetworkName,
 							"account_address": add.AccountAddress,
 						}
-						prevBalance, err := GetAccBalance(query, bson.M{}, "relayer")
+						prevBalance, err := GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)
 						if err != nil {
 							log.Printf("Error while getting prev balance : %v", err)
 
@@ -145,7 +145,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 							},
 						}
 
-						err = UpdateAccBalance(query, updateObj, "relayer")
+						err = UpdateAccBalance(query, updateObj, cfg.MongoDB.Database)
 						if err != nil {
 							log.Printf("Error while updating acc balance")
 						}
