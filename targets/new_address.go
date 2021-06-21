@@ -47,6 +47,21 @@ func AddAddress(cfg *config.Config, args []string) string {
 			return err.Error()
 		}
 
+		balance := Balances{
+			ID:              bson.NewObjectId(),
+			NetworkName:     networkName,
+			AccountNickName: accName,
+			AccountAddress:  accAddress,
+			LCD:             lcd,
+			Threshold:       threshold,
+		}
+
+		err = AddAccBalance(balance, "relayer")
+		if err != nil {
+			log.Printf("Error while adding acc address details : %v", err)
+			return err.Error()
+		}
+
 		msg = "Details added successfully!!"
 	}
 

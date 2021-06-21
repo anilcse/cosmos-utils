@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -32,10 +33,10 @@ func main() {
 	// Calling go routine to send alert about validator status
 	go func() {
 		for {
-			// if err := server.ValidatorStatusAlert(cfg); err != nil {
-			// 	fmt.Println("Error while sending jailed alerts", err)
-			// }
-			time.Sleep(60 * time.Second)
+			if err := targets.BalanceChangeAlerts(cfg); err != nil {
+				fmt.Println("Error while sending jailed alerts", err)
+			}
+			time.Sleep(2 * time.Second)
 		}
 	}()
 

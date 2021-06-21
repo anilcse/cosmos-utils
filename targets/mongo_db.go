@@ -49,7 +49,6 @@ func InsertNewAddress(address Address, db string) error {
 }
 
 func UpdateAddress(query bson.M, updateObj bson.M, db string) error {
-	log.Println("cffg..", db)
 	var c = MongoSession.DB(db).C("address")
 	err := c.Update(query, updateObj)
 	return err
@@ -73,5 +72,31 @@ func DeleteAddress(query bson.M, db string) (err error) {
 	var c = MongoSession.DB(db).C("address")
 
 	err = c.Remove(query)
+	return err
+}
+
+//**** balances ****
+
+func AddAccBalance(bal Balances, db string) error {
+	var c = MongoSession.DB(db).C("balance")
+
+	err := c.Insert(&bal)
+	if err != nil {
+		log.Println("Error while inserting account balances ", err)
+	}
+
+	return err
+}
+
+func GetAccBalance(query bson.M, selectObj bson.M, db string) (bal Balances, err error) {
+	var c = MongoSession.DB(db).C("balance")
+
+	err = c.Find(query).Select(selectObj).One(&bal)
+	return bal, err
+}
+
+func UpdateAccBalance(query bson.M, updateObj bson.M, db string) error {
+	var c = MongoSession.DB(db).C("balance")
+	err := c.Update(query, updateObj)
 	return err
 }
