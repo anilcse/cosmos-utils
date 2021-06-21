@@ -100,3 +100,10 @@ func UpdateAccBalance(query bson.M, updateObj bson.M, db string) error {
 	err := c.Update(query, updateObj)
 	return err
 }
+
+func DeleteBalance(query bson.M, db string) (err error) {
+	var c = MongoSession.DB(db).C("balance")
+
+	err = c.Remove(query)
+	return err
+}
