@@ -28,7 +28,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 			msg = fmt.Sprintf("Error while getting details from db : %v", err)
 			return msg
 		}
-		// log.Fatalf("ball.......", bal, bal.Balance)
+
 		amount := convertToCommaSeparated(fmt.Sprintf("%f", ConvertToFolat64(bal.Balance))) + details.DisplayDenom
 		b := fmt.Sprintf("%s", amount)
 
