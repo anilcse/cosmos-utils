@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
 )
@@ -44,5 +45,33 @@ func InsertNewAddress(address Address, db string) error {
 		log.Println("Error while inserting new address details ", err)
 	}
 
+	return err
+}
+
+func UpdateAddress(query bson.M, updateObj bson.M, db string) error {
+	log.Println("cffg..", db)
+	var c = MongoSession.DB(db).C("address")
+	err := c.Update(query, updateObj)
+	return err
+}
+
+func GetAddress(query bson.M, selectObj bson.M, db string) (address Address, err error) {
+	var c = MongoSession.DB(db).C("address")
+
+	err = c.Find(query).Select(selectObj).One(&address)
+	return address, err
+}
+
+func GetAllAddress(query bson.M, selectObj bson.M, db string) (addresses []Address, err error) {
+	var c = MongoSession.DB(db).C("address")
+
+	err = c.Find(query).Select(selectObj).All(&addresses)
+	return addresses, err
+}
+
+func DeleteAddress(query bson.M, db string) (err error) {
+	var c = MongoSession.DB(db).C("address")
+
+	err = c.Remove(query)
 	return err
 }
