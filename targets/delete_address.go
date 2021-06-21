@@ -23,6 +23,7 @@ func DeleteAddressFromDB(cfg *config.Config, args []string) string {
 		err := DeleteAddress(query, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
+			return msg
 		}
 
 		err = DeleteBalance(query, cfg.MongoDB.Database)

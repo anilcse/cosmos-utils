@@ -21,6 +21,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 		details, err := GetAddress(query, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while getting address details from db : %v", err)
+			return msg
 		}
 
 		bal, err := GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)

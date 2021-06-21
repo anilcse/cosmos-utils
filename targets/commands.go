@@ -62,6 +62,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = DeleteAddressFromDB(cfg, arguments)
 		} else if update.Message.Text == "/get_details" || arguments[0] == "/get_details" {
 			msgToSend = ListAddressDetails(cfg, arguments)
+		} else if update.Message.Text == "/update_threhold" || arguments[0] == "/update_threshold" {
+			msgToSend = UpdateAlertingThershold(cfg, arguments)
 		} else if update.Message.Text == "/list" {
 			msgToSend = GetHelp()
 		} else {
@@ -90,24 +92,13 @@ func TelegramAlerting(cfg *config.Config) {
 func GetHelp() string {
 	msg := fmt.Sprintf("List of available commands\n")
 
-	msg = msg + `/add_address - is to add a new account address into database
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\nformat: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>")
 
-		format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>
-		
-		`
+	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\nformat: /get_details accountAddress")
 
-	msg = msg + `/get_details - is to get account details for given address
-		
-		format: /get_details accountAddress
-		
-		`
+	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n/delete_address accountNickName accountAddress")
 
-	msg = msg + `/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it
-		
-		/delete_address accountNickName accountAddress
-		
-		`
-
+	msg = msg + fmt.Sprintf("/update_threshold - Update account balance alerting thershold\n/update_threshold accountNickName accountAddress threshold")
 	msg = msg + "/list - list out the available commands"
 
 	return msg
