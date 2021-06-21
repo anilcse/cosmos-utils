@@ -9,16 +9,16 @@ import (
 )
 
 func AddAddress(cfg *config.Config, args []string) string {
-	// msg := `Please provide details in following way
-	// /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
-
-	// ex : /add_address osmosis regen-osmosis-relayer accountaddress https://... https://... uosmo OSMO 100
-	// `
-
 	var msg = ""
 
 	if len(args) != 0 && len(args) < 9 {
-		return "Seems to be missing some values, please check your input"
+		msg := `Please check your input format, it should be
+
+		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
+	
+		ex : /add_address osmosis regen-osmosis-relayer accountaddress https://... https://... uosmo OSMO 100
+		`
+		return msg
 	} else if len(args) == 9 {
 		networkName := args[1]
 		accName := args[2]
@@ -63,6 +63,14 @@ func AddAddress(cfg *config.Config, args []string) string {
 		}
 
 		msg = "Details added successfully!!"
+	} else {
+		msg := `Please check your input format, it should be
+
+		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
+	
+		ex : /add_address osmosis regen-osmosis-relayer accountaddress https://... https://... uosmo OSMO 100
+		`
+		return msg
 	}
 
 	return msg

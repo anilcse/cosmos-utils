@@ -30,6 +30,7 @@ func DeleteAddressFromDB(cfg *config.Config, args []string) string {
 			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
 			return msg
 		}
+
 	} else {
 		msg = fmt.Sprintf("Please check your input format\n Ex:  /delete_address accountNickName accountAddress")
 		return msg

@@ -61,6 +61,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = AddAddress(cfg, arguments)
 		} else if update.Message.Text == "/delete_address" || arguments[0] == "/delete_address" {
 			msgToSend = DeleteAddressFromDB(cfg, arguments)
+		} else if update.Message.Text == "/get_details" || arguments[0] == "/get_details" {
+			msgToSend = ListAddressDetails(cfg, arguments)
 		} else if update.Message.Text == "/list" {
 			msgToSend = GetHelp()
 		} else {
