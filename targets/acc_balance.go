@@ -18,7 +18,6 @@ import (
 
 func BalanceChangeAlerts(cfg *config.Config) error {
 	var ops HTTPOptions
-
 	addresses, err := GetAllAddress(bson.M{}, bson.M{}, "relayer")
 
 	for _, add := range addresses {

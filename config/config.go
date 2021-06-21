@@ -20,8 +20,7 @@ type (
 	}
 
 	//InfluxDB details
-	InfluxDB struct {
-		Port     string `mapstructure:"port"`
+	MongoDB struct {
 		Database string `mapstructure:"database"`
 		Username string `mapstructure:"username"`
 		Password string `mapstructure:"password"`
@@ -29,38 +28,8 @@ type (
 
 	//Scraper time interval
 	Scraper struct {
-		Rate          string `mapstructure:"rate"`
-		Port          string `mapstructure:"port"`
-		ValidatorRate string `mapstructure:"validator_rate"`
-	}
-
-	// BlockDiffAlert defines about block diff alert
-	BlockDiffAlert struct {
-		EnableAlert        string `mapstructure:"enable_alert"`
-		BlockDiffThreshold int64  `mapstructure:"block_diff_threshold"`
-	}
-
-	// VotingPowerAlert defines about voting power alert
-	VotingPowerAlert struct {
-		EnableAlert          string `mapstructure:"enable_alert"`
-		VotingPowerThreshold int64  `mapstructure:"voting_power_threshold"`
-	}
-
-	// PeersAlert defines about peer alerts
-	PeersAlert struct {
-		EnableAlert       string `mapstructure:"enable_alert"`
-		NumPeersThreshold int64  `mapstructure:"num_peers_threshold"`
-	}
-
-	// MissedBlocksAlert is about sending alerts of missed blocks based on configuration
-	MissedBlocksAlert struct {
-		EnableAlert           string `mapstructure:"enable_alert"`
-		MissedBlocksThreshold int64  `mapstructure:"missed_blocks_threshold"`
-	}
-
-	DelegationAlerts struct {
-		DelegationAmountThreshold float64 `mapstructure:"delegation_amount_threshold"`
-		AccBalanceChangeThreshold float64 `mapstructure:"acc_balance_change_threshold"`
+		Rate        string `mapstructure:"rate"`
+		DailyAlerts string `mapstructure:"validator_rate"`
 	}
 
 	// RegularStatusAlerts defines time-slots to receive validator status alerts
@@ -71,27 +40,12 @@ type (
 
 	// Config defines all the app configurations
 	Config struct {
-		ValidatorRPCEndpoint string              `mapstructure:"validator_rpc_endpoint"`
-		ValOperatorAddress   string              `mapstructure:"val_operator_addr"`
-		ValidatorHexAddress  string              `mapstructure:"validator_hex_addr"`
-		LCDEndpoint          string              `mapstructure:"lcd_endpoint"`
-		Denom                string              `mapstructure:"denom"`
-		Telegram             TelegramBotConfig   `mapstructure:"telegram"`
-		SendGrid             EmailConfig         `mapstructure:"sendgrid"`
-		ExternalRPC          string              `mapstructure:"external_rpc"`
-		AlertTime1           string              `mapstructure:"alert_time1"`
-		AlertTime2           string              `mapstructure:"alert_time2"`
-		ValidatorName        string              `mapstructure:"validator_name"`
-		InfluxDB             InfluxDB            `mapstructure:"influxdb"`
-		Scraper              Scraper             `mapstructure:"scraper"`
-		BlockDiffAlert       BlockDiffAlert      `mapstructure:"block_diff_alert"`
-		VotingPowerAlert     VotingPowerAlert    `mapstructure:"voting_power_alert"`
-		PeersAlert           PeersAlert          `mapstructure:"Peers_alert"`
-		AccountAddress       string              `mapstructure:"account_addr"`
-		BalanceChangeAlerts  string              `mapstructure:"balance_change_alert"`
-		MissedBlocksAlert    MissedBlocksAlert   `mapstructure:"missed_blocks_alert"`
-		DelegationAlerts     DelegationAlerts    `mapstructure:"delegation_alerts"`
-		RegularStatusAlerts  RegularStatusAlerts `mapstructure:"regular_status_alerts"`
+		Telegram            TelegramBotConfig   `mapstructure:"telegram"`
+		SendGrid            EmailConfig         `mapstructure:"sendgrid"`
+		MongoDB             MongoDB             `mapstructure:"mongodb"`
+		Scraper             Scraper             `mapstructure:"scraper"`
+		EnableAlerts        string              `mapstructure:"enable_alerts"`
+		RegularStatusAlerts RegularStatusAlerts `mapstructure:"regular_status_alerts"`
 	}
 )
 
