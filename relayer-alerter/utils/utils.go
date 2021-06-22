@@ -11,10 +11,17 @@ import (
 )
 
 // ConvertToFolat64 converts balance from string to float64
-func ConvertToFolat64(balance string) float64 {
+func ConvertValue(balance string, denom string) float64 {
 	bal, _ := strconv.ParseFloat(balance, 64)
 
-	a1 := bal / math.Pow(10, 6)
+	var a1 float64
+
+	if denom == "uiris" || denom == "basecro" {
+		a1 = bal / math.Pow(10, 8)
+	} else {
+		a1 = bal / math.Pow(10, 6)
+	}
+
 	amount := fmt.Sprintf("%.6f", a1)
 
 	a, err := strconv.ParseFloat(amount, 64)

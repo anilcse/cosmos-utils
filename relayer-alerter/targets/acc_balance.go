@@ -31,7 +31,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 		if amount != "" {
 			// amount = accResp.Balances[0].Amount
-			presentBal := utils.ConvertToFolat64(amount)
+			presentBal := utils.ConvertValue(amount, denom)
 
 			// threshold := ConvertToFolat64(add.Threshold)
 			threshold, err := strconv.ParseFloat(add.Threshold, 64)
@@ -98,7 +98,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 				// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinel") == true {
 
 				endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
-				amount, _, err := requestBal(endPoint)
+				amount, denom, err := requestBal(endPoint)
 				if err != nil {
 					log.Printf("Error while getting data from %s", endPoint)
 					return err
@@ -122,8 +122,8 @@ func DailyBalAlerts(cfg *config.Config) error {
 					}
 
 					prevAmount := prevBalance.DialyBalance
-					presentBal := utils.ConvertToFolat64(amount)
-					prevBal := utils.ConvertToFolat64(prevAmount)
+					presentBal := utils.ConvertValue(amount, denom)
+					prevBal := utils.ConvertValue(prevAmount, denom)
 
 					diff := presentBal - prevBal
 					if diff > 0 {

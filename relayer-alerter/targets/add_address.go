@@ -17,7 +17,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 	if len(args) != 0 && len(args) < 9 {
 		msg := `Please check your input format, it should be
 
-		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
+		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <balanceDenom> <displayDenom> <thresholdAlert>
 	
 		ex : /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5
 		`
@@ -91,7 +91,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 	} else {
 		msg := `Please check your input format, it should be
 
-		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
+		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <balanceDenom> <displayDenom> <thresholdAlert>
 	
 		ex : /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5
 		`

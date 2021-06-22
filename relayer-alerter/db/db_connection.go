@@ -25,12 +25,12 @@ func InitDB(cfg *config.Config) {
 	MongoSession, err = mgo.DialWithInfo(MongoDbUrl)
 
 	if err != nil {
-		log.Fatalf("Error while connecting to database", err)
+		log.Fatalf("Error while connecting to database : %v", err)
 	}
 
 	if err = MongoSession.Ping(); err != nil {
 		defer MongoSession.Close()
-		log.Fatalf("Error while connecting to Database ", err)
+		log.Fatalf("Error while connecting to Database : %v", err)
 	}
 	// defer MongoSession.Close()
 	log.Println("Database connected successfully!")

@@ -39,7 +39,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 			return msg
 		}
 
-		a := fmt.Sprintf("%f", utils.ConvertToFolat64(bal.Balance))
+		a := fmt.Sprintf("%f", utils.ConvertValue(bal.Balance, details.Denom))
 		amount := utils.ConvertToCommaSeparated(a) + details.DisplayDenom
 		b := fmt.Sprintf("%s", amount)
 

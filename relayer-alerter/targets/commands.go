@@ -107,7 +107,7 @@ func GetHelp() string {
 
 	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, then run this command.\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- Format:: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n - Example :: /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5\n--------------\n")
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- Format:: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <balanceDenom> <displayDenom> <threshold>\n\n - Example :: /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5\n--------------\n")
 
 	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n- Format:: /get_details <accountAddress>\n\n- Example:: /get_details akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq\n--------------\n")
 
