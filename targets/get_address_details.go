@@ -7,6 +7,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 )
 
 func ListAddressDetails(cfg *config.Config, args []string) string {
@@ -19,13 +20,13 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 			"account_address": address,
 		}
 
-		details, err := GetAddress(query, bson.M{}, cfg.MongoDB.Database)
+		details, err := db.GetAddress(query, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while getting address details from db : %v", err)
 			return msg
 		}
 
-		bal, err := GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)
+		bal, err := db.GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while getting details from db : %v", err)
 			return msg
@@ -49,7 +50,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 
 func GetAllAddressFromDB(cfg *config.Config) string {
 	var msg string
-	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
+	addresses, err := db.GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 	if err != nil {
 		log.Printf("No addresses found in db:")
 		if err.Error() == "not found" {

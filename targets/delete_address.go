@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 )
 
 func DeleteAddressFromDB(cfg *config.Config, args []string) string {
@@ -20,13 +21,13 @@ func DeleteAddressFromDB(cfg *config.Config, args []string) string {
 			"account_address":   address,
 		}
 
-		err := DeleteAddress(query, cfg.MongoDB.Database)
+		err := db.DeleteAddress(query, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
 			return msg
 		}
 
-		err = DeleteBalance(query, cfg.MongoDB.Database)
+		err = db.DeleteBalance(query, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
 			return msg

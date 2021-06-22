@@ -8,13 +8,14 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 )
 
 // GetEndpointsStatus to get alert about endpoints status
 func GetEndpointsStatus(cfg *config.Config) error {
 	var ops HTTPOptions
 
-	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
+	addresses, err := db.GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 	if err != nil {
 		log.Printf("Error while getting addresses list from db : %v", err)
 		return err
@@ -46,7 +47,10 @@ func GetEndpointsStatus(cfg *config.Config) error {
 	}
 
 	if msg != "" {
-		_ = SendTelegramAlert(msg, cfg)
+		err = SendTelegramAlert(msg, cfg)
+		if err != nil {
+			log.Printf("Error while sending telegram alert : %v", err)
+		}
 	}
 
 	return nil

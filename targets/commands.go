@@ -10,6 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 )
 
 // Update is a Telegram object that the handler receives every time an user interacts with the bot.
@@ -140,7 +141,7 @@ func GetRPCStatus(cfg *config.Config) string {
 	var ops HTTPOptions
 	var msg string
 
-	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
+	addresses, err := db.GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 	if err != nil {
 		log.Printf("Error while getting addresses list from db : %v", err)
 		if err.Error() == "not found" {

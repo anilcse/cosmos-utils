@@ -6,6 +6,8 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/types"
 )
 
 func AddAddress(cfg *config.Config, args []string) string {
@@ -29,7 +31,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 		disDenom := args[7]
 		threshold := args[8]
 
-		address := Address{
+		address := types.Address{
 			ID:              bson.NewObjectId(),
 			NetworkName:     networkName,
 			AccountNickName: accName,
@@ -45,7 +47,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			"account_address": address.AccountAddress,
 		}
 
-		addressFromDb, err := GetAddress(queryObj, bson.M{}, cfg.MongoDB.Database)
+		addressFromDb, err := db.GetAddress(queryObj, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
 			log.Printf("Error : %v", err)
 		}
@@ -55,7 +57,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			return msg
 		}
 
-		err = InsertNewAddress(address, cfg.MongoDB.Database) // store in db
+		err = db.InsertNewAddress(address, cfg.MongoDB.Database) // store in db
 		if err != nil {
 			log.Printf("Error while inserting new address details : %v", err)
 			return err.Error()
@@ -66,7 +68,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 		if err != nil {
 			log.Printf("Error while getting balance from endpoint : %v", err)
 		}
-		balance := Balances{
+		balance := types.Balances{
 			ID:              bson.NewObjectId(),
 			NetworkName:     networkName,
 			AccountNickName: accName,
@@ -78,7 +80,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Threshold:       threshold,
 		}
 
-		err = AddAccBalance(balance, cfg.MongoDB.Database) // store in db
+		err = db.AddAccBalance(balance, cfg.MongoDB.Database) // store in db
 		if err != nil {
 			log.Printf("Error while adding acc address details : %v", err)
 			return err.Error()

@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 )
 
 func UpdateAlertingThershold(cfg *config.Config, args []string) string {
@@ -27,7 +28,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 			},
 		}
 
-		err := UpdateAddress(query, update, cfg.MongoDB.Database)
+		err := db.UpdateAddress(query, update, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating threshold : %v", err)
 			if err.Error() == "not found" {
@@ -36,7 +37,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 			return msg
 		}
 
-		err = UpdateAccBalance(query, update, cfg.MongoDB.Database)
+		err = db.UpdateAccBalance(query, update, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating threshold : %v", err)
 			return msg
@@ -69,7 +70,7 @@ func UpdateRPC(cfg *config.Config, args []string) string {
 			},
 		}
 
-		err := UpdateAddress(query, update, cfg.MongoDB.Database)
+		err := db.UpdateAddress(query, update, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating rpc : %v", err)
 			if err.Error() == "not found" {
@@ -104,7 +105,7 @@ func UpdateLCD(cfg *config.Config, args []string) string {
 			},
 		}
 
-		err := UpdateAddress(query, update, cfg.MongoDB.Database)
+		err := db.UpdateAddress(query, update, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating lcd : %v", err)
 			if err.Error() == "not found" {
@@ -113,7 +114,7 @@ func UpdateLCD(cfg *config.Config, args []string) string {
 			return msg
 		}
 
-		err = UpdateAccBalance(query, update, cfg.MongoDB.Database)
+		err = db.UpdateAccBalance(query, update, cfg.MongoDB.Database)
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating lcd address : %v", err)
 			return msg

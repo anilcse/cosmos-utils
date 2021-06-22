@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
 	"github.com/PrathyushaLakkireddy/relayer-alerter/targets"
 )
 
@@ -16,8 +17,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	targets.InitDB(cfg)
-	defer targets.MongoSession.Close()
+	db.InitDB(cfg)
+	defer db.MongoSession.Close()
 
 	var wg sync.WaitGroup
 	wg.Add(1)
