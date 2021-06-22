@@ -66,6 +66,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = ListAddressDetails(cfg, arguments)
 		} else if update.Message.Text == "/update_threhold" || arguments[0] == "/update_threshold" {
 			msgToSend = UpdateAlertingThershold(cfg, arguments)
+		} else if update.Message.Text == "/get_started" {
+			msgToSend = GetCommandInfo()
 		} else if update.Message.Text == "/rpc_status" {
 			msgToSend = GetRPCStatus(cfg)
 		} else if update.Message.Text == "/list" {
@@ -96,14 +98,27 @@ func TelegramAlerting(cfg *config.Config) {
 func GetHelp() string {
 	msg := fmt.Sprintf("List of available commands\n")
 
+	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, just use this once.\n\n")
+
 	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n")
 
 	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n format: /get_details <accountAddress>\n\n")
 
 	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n format: /delete_address <accountNickName> <accountAddress>\n\n")
 
-	msg = msg + fmt.Sprintf("/update_threshold - Update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+
+	msg = msg + fmt.Sprintf("/rpc_status - returns the status of RPC and LCD\n\n")
+
 	msg = msg + "/list - list out the available commands"
+
+	return msg
+}
+
+func GetCommandInfo() string {
+	var msg string
+
+	msg = msg + fmt.Sprintf("!!! Hello there, Follow these instructions before starting !!!\n\n - You can manage your accounts from this telegram chat.\n\n - You can be notified about your daily balance changes\n\n - It also alerts about your account balance when it drops below configured thershold. \n\n- Remember while using /add_address or other commands i.e., which takes arguments, should be space seperated.\n\n - For example /get_details <accountAddress>  --- which takes input of account address, so the command should be like /get_details cosmosalpad8aaklkas19lpbcaaa1212\n\n - After adding account addresses please run /get_details command to cross check the insrted values in db correct or not, if you have any doubt.\n\n Thank you !!!")
 
 	return msg
 }
@@ -132,9 +147,9 @@ func GetRPCStatus(cfg *config.Config) string {
 		_, err := HitHTTPTarget(ops)
 		if err != nil {
 			log.Printf("Error in rpc: %v", err)
-			msg = msg + fmt.Sprintf("⛔⛔ Unreachable to RPC :: %s of %s and the ERROR is : %v\n\n", ops.Endpoint, value.NetworkName, err.Error())
+			msg = msg + fmt.Sprintf("⛔ Unreachable to RPC :: %s of %s and the ERROR is : %v\n", ops.Endpoint, value.NetworkName, err.Error())
 		} else {
-			msg = msg + fmt.Sprintf("RPC of %s ( %s ):  ✅\n\n", value.NetworkName, ops.Endpoint)
+			msg = msg + fmt.Sprintf("RPC of %s ( %s ):  ✅\n", value.NetworkName, ops.Endpoint)
 		}
 
 		ops = HTTPOptions{
@@ -145,7 +160,7 @@ func GetRPCStatus(cfg *config.Config) string {
 		_, err = HitHTTPTarget(ops)
 		if err != nil {
 			log.Printf("Error in lcd endpoint: %v", err)
-			msg = msg + fmt.Sprintf("⛔⛔ Unreachable to LCD :: %s of %s and the ERROR is : %v\n\n", ops.Endpoint, value.NetworkName, err.Error())
+			msg = msg + fmt.Sprintf("⛔ Unreachable to LCD :: %s of %s and the ERROR is : %v\n\n", ops.Endpoint, value.NetworkName, err.Error())
 		} else {
 			msg = msg + fmt.Sprintf("LCD of %s ( %s )  ✅\n\n", value.NetworkName, ops.Endpoint)
 		}
