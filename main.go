@@ -49,5 +49,14 @@ func main() {
 		}
 	}()
 
+	go func() {
+		for {
+			if err := targets.GetEndpointsStatus(cfg); err != nil {
+				fmt.Println("Error while sending endpoint status", err)
+			}
+			time.Sleep(10 * 60 * time.Second)
+		}
+	}()
+
 	wg.Wait()
 }

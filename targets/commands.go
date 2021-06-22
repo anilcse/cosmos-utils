@@ -3,9 +3,11 @@ package targets
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
 )
@@ -64,6 +66,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = ListAddressDetails(cfg, arguments)
 		} else if update.Message.Text == "/update_threhold" || arguments[0] == "/update_threshold" {
 			msgToSend = UpdateAlertingThershold(cfg, arguments)
+		} else if update.Message.Text == "/rpc_status" {
+			msgToSend = GetRPCStatus(cfg)
 		} else if update.Message.Text == "/list" {
 			msgToSend = GetHelp()
 		} else {
@@ -100,6 +104,52 @@ func GetHelp() string {
 
 	msg = msg + fmt.Sprintf("/update_threshold - Update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
 	msg = msg + "/list - list out the available commands"
+
+	return msg
+}
+
+// GetRPCStatus retsurns status of the configured endpoints i.e, rpc and lcd.
+func GetRPCStatus(cfg *config.Config) string {
+	var ops HTTPOptions
+	var msg string
+
+	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
+	if err != nil {
+		log.Printf("Error while getting addresses list from db : %v", err)
+		if err.Error() == "not found" {
+			msg = "No addresses found in database"
+			return msg
+		}
+		// return err
+	}
+
+	for _, value := range addresses {
+		ops = HTTPOptions{
+			Endpoint: value.RPC + "/status",
+			Method:   http.MethodGet,
+		}
+
+		_, err := HitHTTPTarget(ops)
+		if err != nil {
+			log.Printf("Error in rpc: %v", err)
+			msg = msg + fmt.Sprintf("⛔⛔ Unreachable to RPC :: %s of %s and the ERROR is : %v\n\n", ops.Endpoint, value.NetworkName, err.Error())
+		} else {
+			msg = msg + fmt.Sprintf("RPC of %s ( %s ):  ✅\n\n", value.NetworkName, ops.Endpoint)
+		}
+
+		ops = HTTPOptions{
+			Endpoint: value.LCD + "/node_info",
+			Method:   http.MethodGet,
+		}
+
+		_, err = HitHTTPTarget(ops)
+		if err != nil {
+			log.Printf("Error in lcd endpoint: %v", err)
+			msg = msg + fmt.Sprintf("⛔⛔ Unreachable to LCD :: %s of %s and the ERROR is : %v\n\n", ops.Endpoint, value.NetworkName, err.Error())
+		} else {
+			msg = msg + fmt.Sprintf("LCD of %s ( %s )  ✅\n\n", value.NetworkName, ops.Endpoint)
+		}
+	}
 
 	return msg
 }
