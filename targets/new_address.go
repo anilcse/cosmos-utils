@@ -41,22 +41,30 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Threshold:       threshold,
 		}
 
-		err := InsertNewAddress(address, cfg.MongoDB.Database)
+		err := InsertNewAddress(address, cfg.MongoDB.Database) // store in db
 		if err != nil {
 			log.Printf("Error while inserting new address details : %v", err)
 			return err.Error()
 		}
 
+		endPoint := address.LCD + "/cosmos/bank/v1beta1/balances/" + address.AccountAddress
+		bal, den, err := requestBal(endPoint)
+		if err != nil {
+			log.Printf("Error while getting balance from endpoint : %v", err)
+		}
 		balance := Balances{
 			ID:              bson.NewObjectId(),
 			NetworkName:     networkName,
 			AccountNickName: accName,
 			AccountAddress:  accAddress,
 			LCD:             lcd,
+			Balance:         bal,
+			Denom:           den,
+			DialyBalance:    bal,
 			Threshold:       threshold,
 		}
 
-		err = AddAccBalance(balance, cfg.MongoDB.Database)
+		err = AddAccBalance(balance, cfg.MongoDB.Database) // store in db
 		if err != nil {
 			log.Printf("Error while adding acc address details : %v", err)
 			return err.Error()
