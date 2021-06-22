@@ -13,7 +13,8 @@ tg_bot_token = "1533624405:A12567yHww-sT4X-5I_q29rKK8yvWR_T4"
 # Configure your mongodb database name and username if any
 [mongodb]
 database = "relayer"
-username = "vitwit"
+username = ""
+password = ""
 
 [scraper]
 rate = "3s"
