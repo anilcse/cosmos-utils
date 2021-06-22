@@ -12,7 +12,7 @@ import (
 )
 
 func ListAddressDetails(cfg *config.Config, args []string) string {
-	msg := fmt.Sprint("Your ccount details::\n")
+	msg := fmt.Sprint("Your account details::\n")
 
 	if len(args) != 0 && len(args) == 2 {
 		address := args[1]

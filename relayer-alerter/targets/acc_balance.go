@@ -176,7 +176,7 @@ func requestBal(endPoint string) (string, string, error) {
 
 	resp, err := HitHTTPTarget(ops)
 	if err != nil {
-		log.Printf("Error in get account info: %v", err)
+		log.Printf("Error while getting balance info: %v", err)
 		return amount, denom, err
 	}
 	err = json.Unmarshal(resp.Body, &accResp)
