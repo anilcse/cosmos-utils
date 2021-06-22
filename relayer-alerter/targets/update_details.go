@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/db"
 )
 
 func UpdateAlertingThershold(cfg *config.Config, args []string) string {
@@ -32,7 +32,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating threshold : %v", err)
 			if err.Error() == "not found" {
-				msg = fmt.Sprintf("Account %s and address %s not found in database : %s", accName, address)
+				msg = fmt.Sprintf("Account %s and address %s not found in database", accName, address)
 			}
 			return msg
 		}

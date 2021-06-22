@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/targets"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/db"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/targets"
 )
 
 func main() {

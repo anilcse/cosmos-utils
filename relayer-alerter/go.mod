@@ -1,4 +1,4 @@
-module github.com/PrathyushaLakkireddy/relayer-alerter
+module github.com/vitwit/cosmos-utils/relayer-alerter
 
 go 1.15
 

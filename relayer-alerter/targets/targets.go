@@ -9,7 +9,7 @@ import (
 
 	client "github.com/influxdata/influxdb1-client/v2"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
 )
 
 type targetRunner struct{}

@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/types"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/types"
 )
 
 func InsertNewAddress(address types.Address, db string) error {

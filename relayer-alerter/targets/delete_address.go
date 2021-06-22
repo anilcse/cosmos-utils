@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/db"
 )
 
 func DeleteAddressFromDB(cfg *config.Config, args []string) string {

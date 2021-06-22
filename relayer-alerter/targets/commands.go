@@ -9,8 +9,8 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/db"
 )
 
 // Update is a Telegram object that the handler receives every time an user interacts with the bot.

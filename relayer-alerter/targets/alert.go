@@ -4,8 +4,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/PrathyushaLakkireddy/relayer-alerter/alerting"
-	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/alerting"
+	"github.com/vitwit/cosmos-utils/relayer-alerter/config"
 )
 
 // SendTelegramAlert sends the alert to telegram chat
