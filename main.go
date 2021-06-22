@@ -36,7 +36,7 @@ func main() {
 			if err := targets.BalanceChangeAlerts(cfg); err != nil {
 				fmt.Println("Error while sending balance change threshold based alerts", err)
 			}
-			time.Sleep(60 * time.Second)
+			time.Sleep(10 * 60 * time.Second)
 		}
 	}()
 

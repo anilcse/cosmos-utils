@@ -42,7 +42,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 			if presentBal < threshold {
 				t := add.Threshold + " " + add.DisplayDenom
-				_ = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED\n- Your %s balance has dropped below %s", add.AccountNickName, t), cfg)
+				_ = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED\n- Your %s balance has dropped below %s\n -Current account balance : %f %s", add.AccountNickName, t, presentBal, add.DisplayDenom), cfg)
 			}
 
 			query := bson.M{

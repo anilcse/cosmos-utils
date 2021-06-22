@@ -41,7 +41,21 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Threshold:       threshold,
 		}
 
-		err := InsertNewAddress(address, cfg.MongoDB.Database) // store in db
+		queryObj := bson.M{
+			"account_address": address.AccountAddress,
+		}
+
+		addressFromDb, err := GetAddress(queryObj, bson.M{}, cfg.MongoDB.Database)
+		if err != nil {
+			log.Printf("Error : %v", err)
+		}
+
+		if addressFromDb.AccountAddress != "" {
+			msg = "This address was already there in db.\n - Please use get_details <accountAddress>  command to know information."
+			return msg
+		}
+
+		err = InsertNewAddress(address, cfg.MongoDB.Database) // store in db
 		if err != nil {
 			log.Printf("Error while inserting new address details : %v", err)
 			return err.Error()
