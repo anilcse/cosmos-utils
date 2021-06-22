@@ -23,7 +23,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 
 		update := bson.M{
 			"$set": bson.M{
-				"threshold": threshold,
+				"threshold_alert": threshold,
 			},
 		}
 

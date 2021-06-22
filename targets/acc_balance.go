@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/text/language"
@@ -17,39 +18,32 @@ import (
 )
 
 func BalanceChangeAlerts(cfg *config.Config) error {
-	var ops HTTPOptions
 	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
 
 	for _, add := range addresses {
-		if add.NetworkName == "akash" || add.NetworkName == "cosmos" || add.NetworkName == "osmosis" {
+		if strings.EqualFold(add.NetworkName, "akash") == true || strings.EqualFold(add.NetworkName, "cosmos") == true || strings.EqualFold(add.NetworkName, "osmosis") == true || strings.EqualFold(add.NetworkName, "regen") == true {
 
-			ops = HTTPOptions{
-				Endpoint: add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress,
-				Method:   http.MethodGet,
-			}
+			endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
 
-			resp, err := HitHTTPTarget(ops)
+			amount, denom, err := requestBal(endPoint)
 			if err != nil {
-				log.Printf("Error in get account info: %v", err)
+				log.Printf("Error while getting response from balance endpoint : %v", err)
 				return err
 			}
 
-			var accResp AccountBalance
-			err = json.Unmarshal(resp.Body, &accResp)
-			if err != nil {
-				log.Printf("Error while unmarshelling AccountResp: %v", err)
-				return err
-			}
-
-			if len(accResp.Balances) > 0 {
-				amount := accResp.Balances[0].Amount
+			if amount != "" {
+				// amount = accResp.Balances[0].Amount
 				presentBal := ConvertToFolat64(amount)
 
-				threshold := ConvertToFolat64(add.Threshold)
+				// threshold := ConvertToFolat64(add.Threshold)
+				threshold, err := strconv.ParseFloat(add.Threshold, 64)
+				if err != nil {
+					log.Printf("Error while conversting threshold value to float64 : %v", err)
+				}
 
 				if presentBal < threshold {
-					t := add.Threshold + add.DisplayDenom
-					_ = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED\n Your %s balance has dropped below %s", add.AccountNickName, t), cfg)
+					t := add.Threshold + " " + add.DisplayDenom
+					_ = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED\n- Your %s balance has dropped below %s", add.AccountNickName, t), cfg)
 				}
 
 				query := bson.M{
@@ -60,6 +54,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 				updateObj := bson.M{
 					"$set": bson.M{
+						"denom":   denom,
 						"balance": amount,
 					},
 				}
@@ -68,7 +63,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 				if err != nil {
 					log.Printf("Error while updating acc balance")
 				}
-				log.Printf("Address Balance: %s \t and denom : %s", amount, add.DisplayDenom)
+				log.Printf("Address Balance: %s \t and denom : %s", amount, denom)
 			}
 		}
 	}
@@ -100,14 +95,14 @@ func DailyBalAlerts(cfg *config.Config) error {
 
 				if add.NetworkName == "akash" || add.NetworkName == "cosmos" || add.NetworkName == "osmosis" {
 					endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
-					accResp, err := requestBal(endPoint)
+					amount, _, err := requestBal(endPoint)
 					if err != nil {
 						log.Printf("Error while getting data from %s", endPoint)
 						return err
 					}
 
-					if len(accResp.Balances) > 0 {
-						amount := accResp.Balances[0].Amount
+					if amount != "" {
+						// amount := accResp.Balances[0].Amount
 
 						query := bson.M{
 							"lcd":             add.LCD,
@@ -129,13 +124,13 @@ func DailyBalAlerts(cfg *config.Config) error {
 
 						diff := presentBal - prevBal
 						if diff > 0 {
-							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + add.DisplayDenom
+							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 							msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last day)\n", add.AccountNickName, a, diff, add.DisplayDenom)
 						} else if diff < 0 {
-							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + add.DisplayDenom
+							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 							msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last day)\n", add.AccountNickName, a, -(diff), add.DisplayDenom)
 						} else {
-							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + add.DisplayDenom
+							a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 							msg = msg + fmt.Sprintf("%s : %s (Is same as last day)\n", add.AccountNickName, a)
 						}
 
@@ -149,7 +144,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 						if err != nil {
 							log.Printf("Error while updating acc balance")
 						}
-						log.Printf("Address Balance: %s \t and denom : %s", amount, prevAmount)
+						log.Printf("Presnt Balance: %s \t and Previous Amount : %s", amount, prevAmount)
 					}
 				}
 
@@ -163,8 +158,11 @@ func DailyBalAlerts(cfg *config.Config) error {
 	return nil
 }
 
-func requestBal(endPoint string) (AccountBalance, error) {
+func requestBal(endPoint string) (string, string, error) {
 	var accResp AccountBalance
+	var amount string
+	var denom string
+
 	ops := HTTPOptions{
 		Endpoint: endPoint,
 		Method:   http.MethodGet,
@@ -173,15 +171,33 @@ func requestBal(endPoint string) (AccountBalance, error) {
 	resp, err := HitHTTPTarget(ops)
 	if err != nil {
 		log.Printf("Error in get account info: %v", err)
-		return accResp, err
+		return amount, denom, err
 	}
 	err = json.Unmarshal(resp.Body, &accResp)
 	if err != nil {
 		log.Printf("Error while unmarshelling AccountResp: %v", err)
-		return accResp, err
+		return amount, denom, err
 	}
 
-	return accResp, nil
+	for _, value := range accResp.Balances {
+		if value.Denom == "uakt" {
+			amount = value.Amount
+			denom = value.Denom
+			break
+		} else if value.Denom == "uosmo" {
+			amount = value.Amount
+			denom = value.Denom
+			break
+		} else if value.Denom == "uatom" {
+			amount = value.Amount
+			denom = value.Denom
+		} else {
+			amount = value.Amount
+			denom = value.Denom
+		}
+	}
+
+	return amount, denom, nil
 }
 
 // ConvertToFolat64 converts balance from string to float64

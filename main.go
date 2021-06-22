@@ -26,7 +26,7 @@ func main() {
 	go func() {
 		for {
 			targets.TelegramAlerting(cfg)
-			time.Sleep(10 * 60 * time.Second)
+			time.Sleep(4 * time.Second)
 		}
 	}()
 
