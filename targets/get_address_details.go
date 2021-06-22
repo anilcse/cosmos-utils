@@ -2,6 +2,7 @@ package targets
 
 import (
 	"fmt"
+	"log"
 
 	"gopkg.in/mgo.v2/bson"
 
@@ -33,7 +34,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 		amount := convertToCommaSeparated(fmt.Sprintf("%f", ConvertToFolat64(bal.Balance))) + details.DisplayDenom
 		b := fmt.Sprintf("%s", amount)
 
-		text := fmt.Sprintf("Network Name : %s\n Account Nick Name : %s\n Account Address: %s\n RPC: %s\n LCD: %s\n Denom: %s\n DisplayDenom: %s\n Threshold: %s\n Balance: %s\n",
+		text := fmt.Sprintf("Network Name : %s\nAccount Nick Name : %s\nAccount Address: %s\nRPC: %s\nLCD: %s\nDenom: %s\nDisplayDenom: %s\nThreshold: %s\nBalance: %s\n",
 			details.NetworkName, details.AccountNickName, details.AccountAddress, details.RPC, details.LCD, details.Denom, details.DisplayDenom, details.Threshold, b)
 
 		msg = msg + text
@@ -41,6 +42,30 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 	} else {
 		msg = fmt.Sprintf("Please check your input format\n Ex:  /get_details accountAddress")
 		return msg
+	}
+
+	return msg
+}
+
+func GetAllAddressFromDB(cfg *config.Config) string {
+	var msg string
+	addresses, err := GetAllAddress(bson.M{}, bson.M{}, cfg.MongoDB.Database)
+	if err != nil {
+		log.Printf("No addresses found in db:")
+		if err.Error() == "not found" {
+			msg = "No addresses found in database"
+		}
+	}
+
+	if len(addresses) == 0 {
+		msg = "No addresses were added in database"
+	} else {
+		for _, details := range addresses {
+			msg = msg + fmt.Sprintf("Network Name : %s\nAccount Nick Name : %s\nAccount Address: %s\nRPC: %s\nLCD: %s\nDenom: %s\nDisplayDenom: %s\nThreshold: %s\n\n",
+				details.NetworkName, details.AccountNickName, details.AccountAddress, details.RPC, details.LCD, details.Denom, details.DisplayDenom, details.Threshold)
+
+			msg = msg + "---------\n"
+		}
 	}
 
 	return msg

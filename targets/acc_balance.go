@@ -21,7 +21,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 	for _, add := range addresses {
 		// if strings.EqualFold(add.NetworkName, "akash") == true || strings.EqualFold(add.NetworkName, "cosmos") == true || strings.EqualFold(add.NetworkName, "osmosis") == true ||
-		// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinal") == true {
+		// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinel") == true {
 
 		endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
 		amount, denom, err := requestBal(endPoint)
@@ -93,7 +93,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 			for _, add := range addresses {
 
 				// if strings.EqualFold(add.NetworkName, "akash") == true || strings.EqualFold(add.NetworkName, "cosmos") == true || strings.EqualFold(add.NetworkName, "osmosis") == true ||
-				// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinal") == true {
+				// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinel") == true {
 
 				endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
 				amount, _, err := requestBal(endPoint)

@@ -70,6 +70,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = GetCommandInfo()
 		} else if update.Message.Text == "/rpc_status" {
 			msgToSend = GetRPCStatus(cfg)
+		} else if update.Message.Text == "/list_all_addresses" {
+			msgToSend = GetAllAddressFromDB(cfg)
 		} else if update.Message.Text == "/list" {
 			msgToSend = GetHelp()
 		} else {
@@ -107,6 +109,8 @@ func GetHelp() string {
 	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n format: /delete_address <accountNickName> <accountAddress>\n\n")
 
 	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+
+	msg = msg + fmt.Sprintf("/list_all_addresses - list out all addresses which were added into the database\n\n")
 
 	msg = msg + fmt.Sprintf("/rpc_status - returns the status of RPC and LCD\n\n")
 
