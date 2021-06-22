@@ -66,6 +66,10 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = ListAddressDetails(cfg, arguments)
 		} else if update.Message.Text == "/update_threhold" || arguments[0] == "/update_threshold" {
 			msgToSend = UpdateAlertingThershold(cfg, arguments)
+		} else if update.Message.Text == "/update_rpc" || arguments[0] == "/update_rpc" {
+			msgToSend = UpdateRPC(cfg, arguments)
+		} else if update.Message.Text == "/update_lcd" || arguments[0] == "/update_lcd" {
+			msgToSend = UpdateLCD(cfg, arguments)
 		} else if update.Message.Text == "/get_started" {
 			msgToSend = GetCommandInfo()
 		} else if update.Message.Text == "/rpc_status" {
@@ -102,13 +106,17 @@ func GetHelp() string {
 
 	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, just use this once.\n\n")
 
-	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n")
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n")
 
-	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n format: /get_details <accountAddress>\n\n")
+	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n- format: /get_details <accountAddress>\n\n")
 
 	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n format: /delete_address <accountNickName> <accountAddress>\n\n")
 
-	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\nformat: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\n- format: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+
+	msg = msg + fmt.Sprintf("/update_rpc - update rpc of your particular account address\n- format: /update_rpc <accountAddress> <rpc>\n\n")
+
+	msg = msg + fmt.Sprintf("/update_lcd- update lcd of your particular account address\n- format: /update_lcd <accountAddress> <lcd>\n\n")
 
 	msg = msg + fmt.Sprintf("/list_all_addresses - list out all addresses which were added into the database\n\n")
 
