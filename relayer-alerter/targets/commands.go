@@ -103,25 +103,25 @@ func TelegramAlerting(cfg *config.Config) {
 
 // GetHelp returns the msg to show for /help
 func GetHelp() string {
-	msg := fmt.Sprintf("List of available commands\n")
+	msg := fmt.Sprintf("List of available commands::\n")
 
-	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, just use this once.\n\n")
+	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, then run this command.\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- Format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n - Example :: /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5\n\n")
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- Format:: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n - Example :: /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n- format: /get_details <accountAddress>\n\n")
+	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n- Format:: /get_details <accountAddress>\n\n- Example:: /get_details akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n format: /delete_address <accountNickName> <accountAddress>\n\n")
+	msg = msg + fmt.Sprintf("/delete_address - is to delete the address from database and once deleted you won't get the alerts related to it\n- Format: /delete_address <accountNickName> <accountAddress>\n\n - Example :: /delete_address akash-relayer akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\n- format: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n")
+	msg = msg + fmt.Sprintf("/update_threshold - update account balance alerting thershold\n- Format: /update_threshold <accountNickName> <accountAddress> <threshold>\n\n - Example :: /update_threshold akash-relayer akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq 5\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/update_rpc - update rpc of your particular account address\n- format: /update_rpc <accountAddress> <rpc>\n\n")
+	msg = msg + fmt.Sprintf("/update_rpc - update rpc of your particular account address\n- Format: /update_rpc <accountAddress> <rpc>\n\n - Example :: /update_rpc akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq https://localhost:26657\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/update_lcd- update lcd of your particular account address\n- format: /update_lcd <accountAddress> <lcd>\n\n")
+	msg = msg + fmt.Sprintf("/update_lcd - update lcd of your particular account address\n- Format: /update_lcd <accountAddress> <lcd>\n\n - Example :: /update_lcd akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq https://localhost:1317\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/list_all_addresses - list out all addresses which were added into the database\n\n")
+	msg = msg + fmt.Sprintf("/list_all_addresses - list out all addresses which were added into the database\n--------------\n")
 
-	msg = msg + fmt.Sprintf("/rpc_status - returns the status of RPC and LCD\n\n")
+	msg = msg + fmt.Sprintf("/rpc_status - returns the status of RPC and LCD\n--------------\n")
 
 	msg = msg + "/list - list out the available commands"
 

@@ -23,13 +23,19 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 
 		details, err := db.GetAddress(query, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
-			msg = fmt.Sprintf("Error while getting address details from db : %v", err)
+			// msg = fmt.Sprintf("Error while getting address details from db : %v", err)
+			if err.Error() == "not found" {
+				msg = "Address NOT FOUND in database"
+			}
 			return msg
 		}
 
 		bal, err := db.GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)
 		if err != nil {
-			msg = fmt.Sprintf("Error while getting details from db : %v", err)
+			// msg = fmt.Sprintf("Error while getting details from db : %v", err)
+			if err.Error() == "not found" {
+				msg = "Address NOT FOUND in database"
+			}
 			return msg
 		}
 

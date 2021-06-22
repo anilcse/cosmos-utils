@@ -79,7 +79,7 @@ func UpdateRPC(cfg *config.Config, args []string) string {
 			return msg
 		}
 	} else {
-		msg = fmt.Sprintf("Please check your input format\n Ex:  /update_rpc accountAddress rpc")
+		msg = fmt.Sprintf("Please check your input format\n- Format: /update_rpc <accountAddress> <rpc>\n\n Example :: /update_rpc akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq https://localhost:26657")
 		return msg
 	}
 
@@ -109,7 +109,7 @@ func UpdateLCD(cfg *config.Config, args []string) string {
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating lcd : %v", err)
 			if err.Error() == "not found" {
-				msg = fmt.Sprintf("Address %s not found in database.", address)
+				msg = fmt.Sprintf("Address %s NOT FOUND in database.", address)
 			}
 			return msg
 		}
@@ -121,7 +121,7 @@ func UpdateLCD(cfg *config.Config, args []string) string {
 		}
 
 	} else {
-		msg = fmt.Sprintf("Please check your input format\n Ex:  /update_lcd accountAddress lcd")
+		msg = fmt.Sprintf("Please check your input format\n- Format ::  /update_lcd <accountAddress> <lcd>\n\n- Example :: /update_lcd akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq https://localhost:1317")
 		return msg
 	}
 

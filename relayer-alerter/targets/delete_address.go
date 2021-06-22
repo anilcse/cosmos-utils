@@ -23,13 +23,19 @@ func DeleteAddressFromDB(cfg *config.Config, args []string) string {
 
 		err := db.DeleteAddress(query, cfg.MongoDB.Database)
 		if err != nil {
-			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
+			// msg = fmt.Sprintf("Error while deleting address from db : %v", err)
+			if err.Error() == "not found" {
+				msg = "Address NOT FOUND in database"
+			}
 			return msg
 		}
 
 		err = db.DeleteBalance(query, cfg.MongoDB.Database)
 		if err != nil {
-			msg = fmt.Sprintf("Error while deleting address from db : %v", err)
+			// msg = fmt.Sprintf("Error while deleting address from db : %v", err)
+			if err.Error() == "not found" {
+				msg = "Address NOT FOUND in database"
+			}
 			return msg
 		}
 
