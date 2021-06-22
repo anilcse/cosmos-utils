@@ -3,7 +3,7 @@
 enable_alerts = "yes"
 
 [regular_status_alerts]
-alert_timings = ["02:30PM","12:18PM","11:54AM","11:51AM"]
+alert_timings = ["02:30PM","02:30AM"]
 
 # Configure telegarm bot details to  get alerts
 [telegram]

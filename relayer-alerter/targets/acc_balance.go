@@ -41,7 +41,10 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 			if presentBal < threshold {
 				t := add.Threshold + " " + add.DisplayDenom
-				_ = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED\n- Your %s balance has dropped below %s\n -Current account balance : %f %s", add.AccountNickName, t, presentBal, add.DisplayDenom), cfg)
+				err = SendTelegramAlert(fmt.Sprintf("ACTION REQUIRED:\n- Your %s balance has dropped below %s\n -Current account balance : %f %s", add.AccountNickName, t, presentBal, add.DisplayDenom), cfg)
+				if err != nil {
+					log.Printf("Error while sending telegram alert : %v", err)
+				}
 			}
 
 			query := bson.M{
@@ -125,13 +128,13 @@ func DailyBalAlerts(cfg *config.Config) error {
 					diff := presentBal - prevBal
 					if diff > 0 {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last day)\n", add.AccountNickName, a, diff, add.DisplayDenom)
+						msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last 12 hours)\n", add.AccountNickName, a, diff, add.DisplayDenom)
 					} else if diff < 0 {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last day)\n", add.AccountNickName, a, -(diff), add.DisplayDenom)
+						msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last 12 hours)\n", add.AccountNickName, a, -(diff), add.DisplayDenom)
 					} else {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (Is same as last day)\n", add.AccountNickName, a)
+						msg = msg + fmt.Sprintf("%s : %s (Is same as last 12 hours)\n", add.AccountNickName, a)
 					}
 
 					updateObj := bson.M{
@@ -152,6 +155,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 
 			err = SendTelegramAlert(msg, cfg)
 			if err != nil {
+				log.Printf("Error while sending telegram alert : %v", err)
 				return err
 			}
 

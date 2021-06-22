@@ -32,7 +32,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 		if err != nil {
 			msg = fmt.Sprintf("Error while updating threshold : %v", err)
 			if err.Error() == "not found" {
-				msg = fmt.Sprintf("Account %s and address %s not found in database", accName, address)
+				msg = fmt.Sprintf("Account %s and address %s NOT FOUND in database", accName, address)
 			}
 			return msg
 		}
@@ -44,7 +44,7 @@ func UpdateAlertingThershold(cfg *config.Config, args []string) string {
 		}
 
 	} else {
-		msg = fmt.Sprintf("Please check your input format\n Ex:  /update_threshold accountNickName accountAddress threshold")
+		msg = fmt.Sprintf("Please check your input format\n- Format:  /update_threshold <accountNickName> <accountAddress> <threshold>\n\n- Example:: /update_threshold akash-relayer akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq 5")
 		return msg
 	}
 

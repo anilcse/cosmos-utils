@@ -43,7 +43,7 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 		msg = msg + text
 
 	} else {
-		msg = fmt.Sprintf("Please check your input format\n Ex:  /get_details accountAddress")
+		msg = fmt.Sprintf("Please check your input format\n Ex:  /get_details akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq")
 		return msg
 	}
 

@@ -34,7 +34,7 @@ func DeleteAddressFromDB(cfg *config.Config, args []string) string {
 		}
 
 	} else {
-		msg = fmt.Sprintf("Please check your input format\n Ex:  /delete_address accountNickName accountAddress")
+		msg = fmt.Sprintf("Please check your input format\n Example:  /delete_address akash-relayer akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq")
 		return msg
 	}
 
