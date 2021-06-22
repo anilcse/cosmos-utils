@@ -8,6 +8,7 @@ import (
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
 	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/utils"
 )
 
 func ListAddressDetails(cfg *config.Config, args []string) string {
@@ -32,7 +33,8 @@ func ListAddressDetails(cfg *config.Config, args []string) string {
 			return msg
 		}
 
-		amount := convertToCommaSeparated(fmt.Sprintf("%f", ConvertToFolat64(bal.Balance))) + details.DisplayDenom
+		a := fmt.Sprintf("%f", utils.ConvertToFolat64(bal.Balance))
+		amount := utils.ConvertToCommaSeparated(a) + details.DisplayDenom
 		b := fmt.Sprintf("%s", amount)
 
 		text := fmt.Sprintf("Network Name : %s\nAccount Nick Name : %s\nAccount Address: %s\nRPC: %s\nLCD: %s\nDenom: %s\nDisplayDenom: %s\nThreshold: %s\nBalance: %s\n",

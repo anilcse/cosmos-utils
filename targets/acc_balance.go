@@ -4,17 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 	"strconv"
 	"time"
 
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/PrathyushaLakkireddy/relayer-alerter/config"
 	"github.com/PrathyushaLakkireddy/relayer-alerter/db"
+	"github.com/PrathyushaLakkireddy/relayer-alerter/utils"
 )
 
 func BalanceChangeAlerts(cfg *config.Config) error {
@@ -33,7 +31,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 		if amount != "" {
 			// amount = accResp.Balances[0].Amount
-			presentBal := ConvertToFolat64(amount)
+			presentBal := utils.ConvertToFolat64(amount)
 
 			// threshold := ConvertToFolat64(add.Threshold)
 			threshold, err := strconv.ParseFloat(add.Threshold, 64)
@@ -121,18 +119,18 @@ func DailyBalAlerts(cfg *config.Config) error {
 					}
 
 					prevAmount := prevBalance.DialyBalance
-					presentBal := ConvertToFolat64(amount)
-					prevBal := ConvertToFolat64(prevAmount)
+					presentBal := utils.ConvertToFolat64(amount)
+					prevBal := utils.ConvertToFolat64(prevAmount)
 
 					diff := presentBal - prevBal
 					if diff > 0 {
-						a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
+						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 						msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last day)\n", add.AccountNickName, a, diff, add.DisplayDenom)
 					} else if diff < 0 {
-						a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
+						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 						msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last day)\n", add.AccountNickName, a, -(diff), add.DisplayDenom)
 					} else {
-						a := convertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
+						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
 						msg = msg + fmt.Sprintf("%s : %s (Is same as last day)\n", add.AccountNickName, a)
 					}
 
@@ -221,28 +219,4 @@ func requestBal(endPoint string) (string, string, error) {
 	}
 
 	return amount, denom, nil
-}
-
-// ConvertToFolat64 converts balance from string to float64
-func ConvertToFolat64(balance string) float64 {
-	bal, _ := strconv.ParseFloat(balance, 64)
-
-	a1 := bal / math.Pow(10, 6)
-	amount := fmt.Sprintf("%.6f", a1)
-
-	a, err := strconv.ParseFloat(amount, 64)
-	if err != nil {
-		log.Printf("Error while converting string to folat64 : %v", err)
-	}
-
-	return a
-}
-
-func convertToCommaSeparated(amt string) string {
-	a, err := strconv.Atoi(amt)
-	if err != nil {
-		return amt
-	}
-	p := message.NewPrinter(language.English)
-	return p.Sprintf("%d", a)
 }
