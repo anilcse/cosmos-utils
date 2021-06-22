@@ -19,20 +19,20 @@ type (
 		ReceiverMailAddress string `mapstructure:"email_address"`
 	}
 
-	//InfluxDB details
+	// MongoDB details
 	MongoDB struct {
 		Database string `mapstructure:"database"`
 		Username string `mapstructure:"username"`
 		Password string `mapstructure:"password"`
 	}
 
-	//Scraper time interval
+	// Scraper time interval
 	Scraper struct {
 		Rate        string `mapstructure:"rate"`
 		DailyAlerts string `mapstructure:"validator_rate"`
 	}
 
-	// RegularStatusAlerts defines time-slots to receive validator status alerts
+	// RegularStatusAlerts defines time-slots to receive daily balances chage
 	RegularStatusAlerts struct {
 		// AlertTimings is the array of time slots to send validator status alerts
 		AlertTimings []string `mapstructure:"alert_timings"`

@@ -149,10 +149,12 @@ func DailyBalAlerts(cfg *config.Config) error {
 				// }
 
 			}
+
 			err = SendTelegramAlert(msg, cfg)
 			if err != nil {
 				return err
 			}
+
 		}
 	}
 	return nil

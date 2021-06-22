@@ -10,11 +10,6 @@ alert_timings = ["02:30PM","12:18PM","11:54AM","11:51AM"]
 tg_chat_id = 2282123405
 tg_bot_token = "1533624405:A12567yHww-sT4X-5I_q29rKK8yvWR_T4"
 
-# Configure sendgrid account detals to get email alerts
-[sendgrid]
-sendgrid_token = "SG.fMdY2lmRQ8absbQ.5OKsFzyc_1ccoC8y_kwvIxsofJ_1UuOvAFiQAVBdM12Q"
-email_address = "xyz@domain.com"
-
 # Configure your mongodb database name and username if any
 [mongodb]
 database = "relayer"
