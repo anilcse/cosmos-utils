@@ -35,7 +35,7 @@ func TelegramAlerting(cfg *config.Config) {
 	// var c client.Client
 	bot, err := tgbotapi.NewBotAPI(cfg.Telegram.BotToken)
 	if err != nil {
-		log.Fatalf("Please configure telegram bot token :", err)
+		log.Fatalf("Please configure telegram bot token : %v", err)
 	}
 
 	bot.Debug = true
@@ -107,7 +107,7 @@ func GetHelp() string {
 
 	msg = msg + fmt.Sprintf("/get_started - if you have doubts in giving inputs and how to start, just use this once.\n\n")
 
-	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n")
+	msg = msg + fmt.Sprintf("/add_address - is to add a new account address into database\n- Format: /add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <threshold>\n\n - Example :: /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5\n\n")
 
 	msg = msg + fmt.Sprintf("/get_details - is to get account details for given address\n- format: /get_details <accountAddress>\n\n")
 

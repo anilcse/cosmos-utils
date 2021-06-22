@@ -31,7 +31,7 @@ func GetEndpointsStatus(cfg *config.Config) error {
 		_, err := HitHTTPTarget(ops)
 		if err != nil {
 			log.Printf("Error in rpc: %v", err)
-			msg = msg + fmt.Sprintf("⛔ Unreachable to RPC :: %s and the ERROR is : %v\n", ops.Endpoint, err.Error())
+			msg = msg + fmt.Sprintf("⛔ Unreachable to %s RPC :: %s and the ERROR is : %v\n", value.NetworkName, ops.Endpoint, err.Error())
 		}
 
 		ops = HTTPOptions{
@@ -42,7 +42,7 @@ func GetEndpointsStatus(cfg *config.Config) error {
 		_, err = HitHTTPTarget(ops)
 		if err != nil {
 			log.Printf("Error in lcd endpoint: %v", err)
-			msg = msg + fmt.Sprintf("⛔ Unreachable to LCD :: %s and the ERROR is : %v\n\n", ops.Endpoint, err.Error())
+			msg = msg + fmt.Sprintf("⛔ Unreachable to %s LCD :: %s and the ERROR is : %v\n\n", value.NetworkName, ops.Endpoint, err.Error())
 		}
 	}
 

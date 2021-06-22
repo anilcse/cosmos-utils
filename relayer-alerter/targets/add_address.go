@@ -18,7 +18,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 
 		/add_address <networkName> <accountNickName> <accountAddress> <rpc> <lcd> <denom> <displayDenom> <thresholdAlert>
 	
-		ex : /add_address osmosis regen-osmosis-relayer accountaddress https://... https://... uosmo OSMO 100
+		ex : /add_address akash akash-relayer akash1qwlcuf2c2dhtgy8z5y7xxqev76km0n5mmnpeqq https://localhost:26657 https://localhost:1317 uakt AKT 5
 		`
 		return msg
 	} else if len(args) == 9 {
