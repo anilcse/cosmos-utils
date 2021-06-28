@@ -23,7 +23,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 		// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinel") == true {
 
 		endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
-		amount, denom, err := requestBal(endPoint)
+		amount, denom, err := requestBal(endPoint, add.Denom)
 		if err != nil {
 			log.Printf("Error while getting response from balance endpoint : %v", err)
 			return err
@@ -98,7 +98,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 				// 	strings.EqualFold(add.NetworkName, "regen") == true || strings.EqualFold(add.NetworkName, "sentinel") == true {
 
 				endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
-				amount, denom, err := requestBal(endPoint)
+				amount, denom, err := requestBal(endPoint, add.Denom)
 				if err != nil {
 					log.Printf("Error while getting data from %s", endPoint)
 					return err
@@ -164,7 +164,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 	return nil
 }
 
-func requestBal(endPoint string) (string, string, error) {
+func requestBal(endPoint string, balDenom string) (string, string, error) {
 	var accResp AccountBalance
 	var amount string
 	var denom string
@@ -186,41 +186,10 @@ func requestBal(endPoint string) (string, string, error) {
 	}
 
 	for _, value := range accResp.Balances {
-		if value.Denom == "uakt" {
+		if value.Denom == balDenom {
 			amount = value.Amount
 			denom = value.Denom
 			break
-		} else if value.Denom == "uosmo" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "uatom" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "uregen" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "udvpn" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "uxprt" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "uiris" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else if value.Denom == "basecro" {
-			amount = value.Amount
-			denom = value.Denom
-			break
-		} else {
-			amount = value.Amount
-			denom = value.Denom
 		}
 	}
 

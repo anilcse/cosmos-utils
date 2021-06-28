@@ -65,7 +65,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 		}
 
 		endPoint := address.LCD + "/cosmos/bank/v1beta1/balances/" + address.AccountAddress
-		bal, den, err := requestBal(endPoint)
+		bal, den, err := requestBal(endPoint, address.Denom)
 		if err != nil {
 			log.Printf("Error while getting balance from endpoint : %v", err)
 		}
