@@ -27,6 +27,11 @@ else
   go version
 fi
 
+sudo service cosmovisor stop
+
+# $DAEMON unsafe-reset-all --home $DAEMON_HOME
+rm -rf $DAEMON_HOME
+
 echo "--------- Install $DAEMON ---------"
 go get $GH_URL
 cd ~/go/src/$GH_URL
@@ -38,7 +43,7 @@ $DAEMON version --long
 
 echo "Installing cosmovisor - an upgrade manager..."
 
-rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
+# rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
 git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
 cd $GOPATH/src/github.com/cosmos/cosmos-sdk
 git fetch
@@ -57,22 +62,23 @@ mkdir -p $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin
 cd ~/go/src/$GH_URL
 git fetch && git checkout $UPGRADE_VERSION
 make build
-mv ./build/$DAEMON $DAEMON_HOME/cosmovisor/$UPGRADE_TITLE/bin/
+mv ./build/$DAEMON $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin/
 echo "Upgradable binary version"
 $DAEMON_HOME/cosmovisor/$UPGRADE_TITLE/bin/$DAEMON version
 
 echo "---------Initializing the chain ($CHAINID)---------"
 
-$DAEMON unsafe-reset-all --home $DAEMON_HOME
-rm -rf $DAEMON_HOME/config/gen*
 
 $DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME
 
 echo "----------Update chain config---------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME/config/genesis.json
+sed -i '/minimum-gas-prices =/c\minimum-gas-prices = "'"0.0025$DENOM"'"' $DAEMON_HOME/config/app.toml
+sed -i '/timeout_commit = "5s"/c\timeout_commit = "'"1s"'"' $DAEMON_HOME/config/config.toml
+
+sed -i "s/172800000000000/60000000000/g" $DAEMON_HOME/config/genesis.json
+sed -i "s/172800s/60s/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/stake/$DENOM/g" $DAEMON_HOME/config/genesis.json
 #sed -i 's/"signed_blocks_window": "100"/"signed_blocks_window": "10"/g' $DAEMON_HOME/config/genesis.json #10 blocks slashing window to test slashing
 
@@ -128,7 +134,7 @@ sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 sudo -S systemctl daemon-reload
 sudo -S systemctl start cosmovisor
 
-sleep 20s
+sleep 10s
 
 echo "Checking chain status"
 
@@ -138,31 +144,31 @@ echo
 
 echo
 
-sleep 10s
+sleep 2s
 
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
-$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
 
 $CLI query staking validators -o json 
 
 echo "All set!!! Let's try some upgrade"
 
 echo "Submit upgrade proposal"
-$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
-sleep 7
+$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
+sleep 2
 echo
 echo "Query proposal"
 $CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE --home $DAEMON_HOME
 echo
 echo "Vote for proposal"
-$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
-$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
-sleep 10
+$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
+sleep 2
 echo
 echo "Query proposal votes"
 $CLI query gov votes 1 --chain-id $CHAINID  -o json --node $NODE
