@@ -41,6 +41,7 @@ echo "Installing cosmovisor - an upgrade manager..."
 rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
 git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
 cd $GOPATH/src/github.com/cosmos/cosmos-sdk
+git fetch
 git checkout robert/cosmvisor-file-watch
 cd cosmovisor
 make cosmovisor
@@ -51,7 +52,7 @@ mkdir -p $DAEMON_HOME/cosmovisor
 mkdir -p $DAEMON_HOME/cosmovisor/genesis/bin
 cp $(which regen) $DAEMON_HOME/cosmovisor/genesis/bin/
 
-mkdir -p $DAEMON_HOME/cosmovisor/$UPGRADE_TITLE/bin
+mkdir -p $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin
 
 cd ~/go/src/$GH_URL
 git fetch && git checkout $UPGRADE_VERSION
@@ -172,5 +173,5 @@ echo "Your proposal submitted successfully. The chain will halt for upgrade at h
 echo "Just wait and check service logs for UPGRADE NEEDED message and then execute handle_upgrade.sh"
 echo
 echo "####################################################"
-echo "You can view logs by executing `journalctl -u $DAEMON -f`"
-journalctl -u $DAEMON -f
+# echo "You can view logs by executing `journalctl -u $DAEMON -f`"
+journalctl -u cosmovisor -f
