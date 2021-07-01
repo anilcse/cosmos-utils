@@ -4,9 +4,9 @@
 
 Clone the repo
 ```sh
-git clone https://github.com/anilCSE/cosmos-testnet-utils.git
+git clone https://github.com/vitwit/cosmos-utils.git
 
-cd cosmos-testnet-utils
+cd cosmos-utils
 ```
 
 #### Set executable permissions
