@@ -100,8 +100,8 @@ func DailyBalAlerts(cfg *config.Config) error {
 				endPoint := add.LCD + "/cosmos/bank/v1beta1/balances/" + add.AccountAddress
 				amount, denom, err := requestBal(endPoint, add.Denom)
 				if err != nil {
-					log.Printf("Error while getting data from %s", endPoint)
-					return err
+					log.Printf("Error while getting data from %v", err)
+					// return err
 				}
 
 				if amount != "" {
