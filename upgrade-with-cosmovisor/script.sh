@@ -44,10 +44,12 @@ $DAEMON version --long
 echo "Installing cosmovisor - an upgrade manager..."
 
 # rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
-git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
+# git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
 cd $GOPATH/src/github.com/cosmos/cosmos-sdk
 git fetch
+# git checkout anil/add_backup_option
 git checkout robert/cosmvisor-file-watch
+git pull
 cd cosmovisor
 make cosmovisor
 cp cosmovisor $GOBIN/cosmovisor
@@ -64,7 +66,7 @@ git fetch && git checkout $UPGRADE_VERSION
 make build
 mv ./build/$DAEMON $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin/
 echo "Upgradable binary version"
-$DAEMON_HOME/cosmovisor/$UPGRADE_TITLE/bin/$DAEMON version
+$DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin/$DAEMON version
 
 echo "---------Initializing the chain ($CHAINID)---------"
 
@@ -75,7 +77,8 @@ echo "----------Update chain config---------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
 sed -i '/minimum-gas-prices =/c\minimum-gas-prices = "'"0.0025$DENOM"'"' $DAEMON_HOME/config/app.toml
-sed -i '/timeout_commit = "5s"/c\timeout_commit = "'"1s"'"' $DAEMON_HOME/config/config.toml
+# sed -i '/pruning = "default"/c\pruning = "nothing"' $DAEMON_HOME/config/app.toml
+sed -i '/timeout_commit = "5s"/c\timeout_commit = "300ms"' $DAEMON_HOME/config/config.toml
 
 sed -i "s/172800000000000/60000000000/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/172800s/60s/g" $DAEMON_HOME/config/genesis.json
@@ -93,7 +96,7 @@ $DAEMON keys add validator --keyring-backend test --home $DAEMON_HOME
 echo "----------Genesis creation---------"
 
 # Now its time to construct the genesis file
-CURRENT_TIME_SECONDS=$(( date +%s ))
+CURRENT_TIME_SECONDS=$(date +%s)
 VESTING_STARTTIME=$(( $CURRENT_TIME_SECONDS + 10 ))
 VESTING_ENDTIME=$(( $CURRENT_TIME_SECONDS + 10000 ))
 
