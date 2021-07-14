@@ -34,3 +34,5 @@ export GOBIN=$GOPATH/bin
 ## Execute script
 
 ```sh
+./upgrade-with-cosmovisor/scripts.sh
+```
