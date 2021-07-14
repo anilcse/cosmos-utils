@@ -44,12 +44,11 @@ $DAEMON version --long
 echo "Installing cosmovisor - an upgrade manager..."
 
 # rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
-# git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
+git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
 cd $GOPATH/src/github.com/cosmos/cosmos-sdk
 git fetch
-# git checkout anil/add_backup_option
-git checkout robert/cosmvisor-file-watch
-git pull
+git checkout $COSMOVISOR_VERSION
+git pull origin  $COSMOVISOR_VERSION
 cd cosmovisor
 make cosmovisor
 cp cosmovisor $GOBIN/cosmovisor

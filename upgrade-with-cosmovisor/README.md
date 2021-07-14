@@ -26,6 +26,7 @@ export DAEMON_HOME=~/.regen
 export CLI=regen
 export UPGRADE_BLOCK_HEIGHT=90
 export UPGRADE_TITLE=v0.43.0-rc0-upgrade
+export COSMOVISOR_VERSION=anil/add_backup_option
 export GOPATH=$HOME/go
 export GOBIN=$GOPATH/bin
 ```
