@@ -26,7 +26,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 		amount, denom, err := requestBal(endPoint, add.Denom)
 		if err != nil {
 			log.Printf("Error while getting response from balance endpoint : %v", err)
-			return err
+			// return err
 		}
 
 		if amount != "" {
