@@ -23,26 +23,28 @@ func GetEndpointsStatus(cfg *config.Config) error {
 	var msg string
 
 	for _, value := range addresses {
-		ops = HTTPOptions{
-			Endpoint: value.RPC + "/status",
-			Method:   http.MethodGet,
-		}
+		if value.NetworkName != "persistence" { // for now ignore endpoint alerts for persistence
+			ops = HTTPOptions{
+				Endpoint: value.RPC + "/status",
+				Method:   http.MethodGet,
+			}
 
-		_, err := HitHTTPTarget(ops)
-		if err != nil {
-			log.Printf("Error in rpc: %v", err)
-			msg = msg + fmt.Sprintf("⛔ Unreachable to %s RPC :: %s and the ERROR is : %v\n", value.NetworkName, ops.Endpoint, err.Error())
-		}
+			_, err := HitHTTPTarget(ops)
+			if err != nil {
+				log.Printf("Error in rpc: %v", err)
+				msg = msg + fmt.Sprintf("⛔ Unreachable to %s RPC :: %s and the ERROR is : %v\n", value.NetworkName, ops.Endpoint, err.Error())
+			}
 
-		ops = HTTPOptions{
-			Endpoint: value.LCD + "/node_info",
-			Method:   http.MethodGet,
-		}
+			ops = HTTPOptions{
+				Endpoint: value.LCD + "/node_info",
+				Method:   http.MethodGet,
+			}
 
-		_, err = HitHTTPTarget(ops)
-		if err != nil {
-			log.Printf("Error in lcd endpoint: %v", err)
-			msg = msg + fmt.Sprintf("⛔ Unreachable to %s LCD :: %s and the ERROR is : %v\n\n", value.NetworkName, ops.Endpoint, err.Error())
+			_, err = HitHTTPTarget(ops)
+			if err != nil {
+				log.Printf("Error in lcd endpoint: %v", err)
+				msg = msg + fmt.Sprintf("⛔ Unreachable to %s LCD :: %s and the ERROR is : %v\n\n", value.NetworkName, ops.Endpoint, err.Error())
+			}
 		}
 	}
 
