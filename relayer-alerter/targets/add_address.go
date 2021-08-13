@@ -79,6 +79,7 @@ func AddAddress(cfg *config.Config, args []string) string {
 			Denom:           den,
 			DialyBalance:    bal,
 			Threshold:       threshold,
+			DisplayDenom:    disDenom,
 		}
 
 		err = db.AddAccBalance(balance, cfg.MongoDB.Database) // store in db

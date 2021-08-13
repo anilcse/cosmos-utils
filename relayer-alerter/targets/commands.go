@@ -71,6 +71,8 @@ func TelegramAlerting(cfg *config.Config) {
 			msgToSend = UpdateRPC(cfg, arguments)
 		} else if update.Message.Text == "/update_lcd" || arguments[0] == "/update_lcd" {
 			msgToSend = UpdateLCD(cfg, arguments)
+		} else if update.Message.Text == "/get_balance" || arguments[0] == "/get_balance" {
+			msgToSend = GetAccBalMsg(cfg, arguments)
 		} else if update.Message.Text == "/get_started" {
 			msgToSend = GetCommandInfo()
 		} else if update.Message.Text == "/rpc_status" {

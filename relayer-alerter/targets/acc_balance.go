@@ -60,8 +60,9 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 
 			updateObj := bson.M{
 				"$set": bson.M{
-					"denom":   denom,
-					"balance": amount,
+					"denom":      denom,
+					"balance":    amount,
+					"updated_at": time.Now().UTC(),
 				},
 			}
 
@@ -146,6 +147,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 					updateObj := bson.M{
 						"$set": bson.M{
 							"daily_balance": amount,
+							"updated_at":    time.Now().UTC(),
 						},
 					}
 
@@ -156,7 +158,6 @@ func DailyBalAlerts(cfg *config.Config) error {
 					log.Printf("Present Balance: %s \t and Previous Amount : %s", amount, prevAmount)
 				}
 				// }
-
 			}
 
 			err = SendTelegramAlert(msg, cfg)
@@ -200,4 +201,36 @@ func requestBal(endPoint string, balDenom string) (string, string, error) {
 	}
 
 	return amount, denom, nil
+}
+
+func GetAccBalMsg(cfg *config.Config, args []string) string {
+	var msg string
+
+	if len(args) != 0 && len(args) == 2 {
+		address := args[1]
+
+		query := bson.M{
+			"account_address": address,
+		}
+
+		bal, err := db.GetAccBalance(query, bson.M{}, cfg.MongoDB.Database)
+		if err != nil {
+			log.Printf("Error while getting account balance : %v", err)
+
+			if err.Error() == "not found" {
+				log.Printf("Address not found %v", err)
+			}
+		}
+
+		accbal := utils.ConvertValue(bal.Balance, bal.Denom)
+		b := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", accbal)) + " " + bal.DisplayDenom
+
+		msg = fmt.Sprintf("%s : %s and updated at :: %v \n\n", bal.AccountNickName, b, bal.UpdatedAt)
+
+		return msg
+	} else {
+		msg = fmt.Sprintf("Please check your input format\n- Format ::  /get_balance <accountAddress> \n\n- Example :: /get_balance akash1qwlcuf2c2dhtgy8z5y7xmqev56km0n5axnpeqq")
+
+		return msg
+	}
 }

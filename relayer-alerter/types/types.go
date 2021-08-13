@@ -1,6 +1,8 @@
 package types
 
 import (
+	"time"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -27,5 +29,7 @@ type (
 		Balance         string        `json:"balance" bson:"balance"`
 		DialyBalance    string        `json:"daily_balance" bson:"daily_balance"`
 		Threshold       string        `json:"threshold_alert" bson:"threshold_alert"`
+		UpdatedAt       time.Time     `json:"updated_at" bson:"updated_at"`
+		DisplayDenom    string        `json:"display_denom" bson:"display_denom"`
 	}
 )
