@@ -153,7 +153,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 					if err != nil {
 						log.Printf("Error while updating acc balance")
 					}
-					log.Printf("Presnt Balance: %s \t and Previous Amount : %s", amount, prevAmount)
+					log.Printf("Present Balance: %s \t and Previous Amount : %s", amount, prevAmount)
 				}
 				// }
 

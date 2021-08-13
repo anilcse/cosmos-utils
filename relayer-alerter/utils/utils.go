@@ -35,7 +35,7 @@ func ConvertValue(balance string, denom string) float64 {
 func ConvertToCommaSeparated(amt string) string {
 	a, err := strconv.Atoi(amt)
 	if err != nil {
-		log.Printf("Error while converting string to int : %v", err, amt)
+		log.Printf("Converting string to int : %v", err)
 		return amt
 	}
 	p := message.NewPrinter(language.English)
