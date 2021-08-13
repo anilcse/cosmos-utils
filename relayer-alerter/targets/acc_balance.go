@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
@@ -105,7 +106,7 @@ func DailyBalAlerts(cfg *config.Config) error {
 				amount, denom, err := requestBal(endPoint, add.Denom)
 				if err != nil {
 					log.Printf("Error while getting data from %v", err)
-					msg = msg + fmt.Sprintf("%s LCD ERROR : %v\n", add.NetworkName, err.Error())
+					msg = msg + fmt.Sprintf("%s LCD ERROR : %v\n\n", strings.ToUpper(add.NetworkName), err.Error())
 					// return err
 				}
 
@@ -133,13 +134,13 @@ func DailyBalAlerts(cfg *config.Config) error {
 					diff := presentBal - prevBal
 					if diff > 0 {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last 12 hours)\n", add.AccountNickName, a, diff, add.DisplayDenom)
+						msg = msg + fmt.Sprintf("%s : %s (%f %s is increased from last 12 hours)\n\n", strings.ToUpper(add.AccountNickName), a, diff, add.DisplayDenom)
 					} else if diff < 0 {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last 12 hours)\n", add.AccountNickName, a, -(diff), add.DisplayDenom)
+						msg = msg + fmt.Sprintf("%s : %s (%f %s is decreased from last 12 hours)\n\n", strings.ToUpper(add.AccountNickName), a, -(diff), add.DisplayDenom)
 					} else {
 						a := utils.ConvertToCommaSeparated(fmt.Sprintf("%f", presentBal)) + " " + add.DisplayDenom
-						msg = msg + fmt.Sprintf("%s : %s (Is same as last 12 hours)\n", add.AccountNickName, a)
+						msg = msg + fmt.Sprintf("%s : %s (Is same as last 12 hours)\n\n", strings.ToUpper(add.AccountNickName), a)
 					}
 
 					updateObj := bson.M{
