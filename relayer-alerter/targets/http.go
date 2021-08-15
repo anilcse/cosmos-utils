@@ -69,7 +69,7 @@ func HitHTTPTarget(ops HTTPOptions) (*PingResp, error) {
 		return nil, err
 	}
 
-	httpcli := http.Client{Timeout: time.Duration(10 * time.Second)}
+	httpcli := http.Client{Timeout: time.Duration(30 * time.Second)}
 	resp, err := httpcli.Do(req)
 	if err != nil {
 		return nil, err

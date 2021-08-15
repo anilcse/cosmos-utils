@@ -27,7 +27,7 @@ func BalanceChangeAlerts(cfg *config.Config) error {
 		amount, denom, err := requestBal(endPoint, add.Denom)
 		if err != nil {
 			log.Printf("Error while getting response from balance endpoint : %v", err)
-			err = SendTelegramAlert(fmt.Sprintf("%s LCD ERROR : %v", add.NetworkName, err.Error()), cfg)
+			// err = SendTelegramAlert(fmt.Sprintf("%s LCD ERROR : %v", add.NetworkName, err.Error()), cfg)
 			if err != nil {
 				log.Printf("Error while sending telegram alert of balance endpoint : %v", err)
 			}
