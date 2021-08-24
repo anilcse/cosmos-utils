@@ -75,14 +75,10 @@ type (
 
 	// ProposalVoters struct holds the parameters of proposal voters
 	ProposalVoters struct {
-		Votes []struct {
+		Vote struct {
 			ProposalID string `json:"proposal_id"`
 			Voter      string `json:"voter"`
 			Option     string `json:"option"`
-		} `json:"votes"`
-		Pagination struct {
-			NextKey string `json:"next_key"`
-			Total   string `json:"total"`
-		} `json:"pagination"`
+		} `json:"vote"`
 	}
 )

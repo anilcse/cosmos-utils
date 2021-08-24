@@ -3,10 +3,8 @@ package server
 import (
 	"encoding/json"
 	"log"
-	"math"
 	"net/http"
 	"os/exec"
-	"strconv"
 
 	"github.com/vitwit/cosmos-utils/proposal-vote-script/config"
 )
@@ -44,42 +42,20 @@ func Vote(cfg *config.Config) error {
 		log.Printf("Voting period proposal ID : %v", proposal.ProposalID)
 
 		ops = HTTPOptions{
-			Endpoint: cfg.LCDEndpoint + "/cosmos/gov/v1beta1/proposals/" + proposal.ProposalID + "/votes",
+			Endpoint: cfg.LCDEndpoint + "/cosmos/gov/v1beta1/proposals/" + proposal.ProposalID + "/votes/" + cfg.AccountAddress,
 			Method:   http.MethodGet,
 		}
 
-		v, err := GetVoters(ops)
+		v, err := GetVoterStatus(ops)
 		if err != nil {
 			log.Printf("Error while getting votes of the proposal: %v", err)
 			return err
 		}
 
-		totalCount, _ := strconv.ParseFloat(v.Pagination.Total, 64) // Check for the total voters count
-		l := math.Ceil(totalCount / 100)
-		nextKey := v.Pagination.NextKey
+		log.Printf("vote response.. %v", v)
 
-		for i := 1; i <= int(l); i++ {
-			ops = HTTPOptions{
-				Endpoint:    cfg.LCDEndpoint + "/cosmos/gov/v1beta1/proposals/" + proposal.ProposalID + "/votes",
-				Method:      http.MethodGet,
-				QueryParams: QueryParams{"pagination.limit=": "50", "pagination.key": nextKey},
-			}
-
-			voters, err := GetVoters(ops)
-			if err != nil {
-				log.Printf("Error while getting votes : %v", err)
-				return err
-			}
-
-			for _, value := range voters.Votes {
-				if value.Voter == cfg.AccountAddress {
-					isVoted = true
-					break
-				}
-			}
-			nextKey = voters.Pagination.NextKey
-
-			log.Printf("i : %d and next key :%s", i, nextKey)
+		if v.Vote.Option == "VOTE_OPTION_YES" {
+			isVoted = true
 		}
 
 		log.Printf("is Voted : %v for proposal ID : %v", isVoted, proposal.ProposalID)
@@ -99,7 +75,7 @@ func Vote(cfg *config.Config) error {
 	return nil
 }
 
-func GetVoters(ops HTTPOptions) (ProposalVoters, error) {
+func GetVoterStatus(ops HTTPOptions) (ProposalVoters, error) {
 	var v ProposalVoters
 	resp, err := HitHTTPTarget(ops)
 	if err != nil {
