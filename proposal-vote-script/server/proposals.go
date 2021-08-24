@@ -40,6 +40,7 @@ func Vote(cfg *config.Config) error {
 
 	for _, proposal := range p.Proposals {
 		log.Printf("Voting period proposal ID : %v", proposal.ProposalID)
+		isVoted = false
 
 		ops = HTTPOptions{
 			Endpoint: cfg.LCDEndpoint + "/cosmos/gov/v1beta1/proposals/" + proposal.ProposalID + "/votes/" + cfg.AccountAddress,
