@@ -40,25 +40,26 @@ $DAEMON version --long
 
 echo "---------Initializing the chain ($CHAINID)---------"
 
-$DAEMON unsafe-reset-all
+$DAEMON unsafe-reset-all  --home $DAEMON_HOME
 rm -rf ~/.$DAEMON/config/gen*
 
-$DAEMON init --chain-id $CHAINID $CHAINID
+$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME
 
 echo "----------Update chain config---------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
+sed -i 's/"timeout_commit" = "5s"'
 sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/172800s/600s/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/stake/$DENOM/g" $DAEMON_HOME/config/genesis.json
 #sed -i 's/"signed_blocks_window": "100"/"signed_blocks_window": "10"/g' $DAEMON_HOME/config/genesis.json #10 blocks slashing window to test slashing
 
-$DAEMON keys add w1 --keyring-backend test
-$DAEMON keys add w2 --keyring-backend test
-$DAEMON keys add w3 --keyring-backend test
-$DAEMON keys add w4 --keyring-backend test
-$DAEMON keys add w5 --keyring-backend test
-$DAEMON keys add validator --keyring-backend test
+$DAEMON keys add w1 --keyring-backend test --home $DAEMON_HOME
+$DAEMON keys add w2 --keyring-backend test --home $DAEMON_HOME
+$DAEMON keys add w3 --keyring-backend test --home $DAEMON_HOME
+$DAEMON keys add w4 --keyring-backend test --home $DAEMON_HOME
+$DAEMON keys add w5 --keyring-backend test --home $DAEMON_HOME
+$DAEMON keys add validator --keyring-backend test --home $DAEMON_HOME
 
 echo "----------Genesis creation---------"
 
@@ -67,16 +68,16 @@ CURRENT_TIME_SECONDS=$(( date +%s ))
 VESTING_STARTTIME=$(( $CURRENT_TIME_SECONDS + 10 ))
 VESTING_ENDTIME=$(( $CURRENT_TIME_SECONDS + 10000 ))
 
-$DAEMON add-genesis-account w1 --keyring-backend test 1000000000000$DENOM --vesting-amount 1000000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON add-genesis-account w5 1000000000000$DENOM  --keyring-backend test
-$DAEMON add-genesis-account validator 1000000000000$DENOM  --keyring-backend test
-$DAEMON add-genesis-account faucet 1000000000000$DENOM  --keyring-backend test
-$DAEMON add-genesis-account w2 --keyring-backend test 1000000000000$DENOM --vesting-amount 100000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON add-genesis-account w3 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON add-genesis-account w4 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON --home $DAEMON_HOME add-genesis-account w1 --keyring-backend test 1000000000000$DENOM --vesting-amount 1000000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON --home $DAEMON_HOME add-genesis-account w5 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME add-genesis-account validator 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME add-genesis-account faucet 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME add-genesis-account w2 --keyring-backend test 1000000000000$DENOM --vesting-amount 100000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON --home $DAEMON_HOME add-genesis-account w3 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON --home $DAEMON_HOME add-genesis-account w4 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
 
-$DAEMON gentx validator 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test
-$DAEMON collect-gentxs
+$DAEMON gentx validator 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME
+$DAEMON collect-gentxs --home $DAEMON_HOME
 
 VAL_OPR_ADDRESS=$($CLI keys show validator -a --bech val --keyring-backend test)
 
@@ -88,7 +89,7 @@ After=network.target
 [Service]
 Type=simple
 User=$USER
-ExecStart=$(which $DAEMON) start
+ExecStart=$(which $DAEMON) start --home $DAEMON_HOME
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
@@ -103,48 +104,47 @@ echo "-------Start $DAEMON service-------"
 sudo -S systemctl daemon-reload
 sudo -S systemctl start $DAEMON
 
-sleep 20s
+sleep 10s
 
 echo "Checking chain status"
 
-$CLI status
+$CLI status --home $DAEMON_HOME
 
 echo 
 echo
 
-sleep 10s
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y
+$CLI --home $DAEMON_HOME tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
 
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y
-
-$CLI query staking validators -o json
+$CLI query staking validators -o json --home $DAEMON_HOME
 
 echo "All set!!! Let's try some upgrade"
 
 echo "Submit upgrade proposal"
-$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test
+$CLI --home $DAEMON_HOME tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test
 sleep 7
 echo
 echo "Query proposal"
-$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
+$CLI --home $DAEMON_HOME query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
 echo
 echo "Vote for proposal"
-$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test
-$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test
+$CLI --home $DAEMON_HOME tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test
+$CLI --home $DAEMON_HOME tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test
 sleep 10
 echo
 echo "Query proposal votes"
-$CLI query gov votes 1 --chain-id $CHAINID  -o json --node $NODE
+$CLI --home $DAEMON_HOME query gov votes 1 --chain-id $CHAINID  -o json --node $NODE
 echo
 echo "Query proposal"
-$CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
+$CLI --home $DAEMON_HOME query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE
 echo "Your proposal submitted successfully. The chain will halt for upgrade at height: $((UPGRADE_BLOCK_HEIGHT))"
 echo "Just wait and check service logs for UPGRADE NEEDED message and then execute handle_upgrade.sh"
 echo
 echo "####################################################"
 echo "You can view logs by executing `journalctl -u $DAEMON -f`"
+journalctl -u $DAEMON -f
