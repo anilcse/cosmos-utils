@@ -51,7 +51,7 @@ func Vote(cfg *config.Config) error {
 
 		log.Printf("vote response.. %v", v)
 
-		if v.Vote.Option == "VOTE_OPTION_YES" {
+		if v.Vote.Option != "" {
 			isVoted = true
 		}
 
