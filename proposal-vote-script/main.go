@@ -25,7 +25,11 @@ func main() {
 			if err := server.Vote(cfg); err != nil {
 				fmt.Printf("Error while voting on new proposals : %v", err)
 			}
-			time.Sleep(5 * time.Second)
+			scrapeRate, err := time.ParseDuration(cfg.Scraper.Rate)
+			if err != nil {
+				log.Fatalf("Invalid scrape rate %v", err)
+			}
+			time.Sleep(scrapeRate)
 		}
 	}()
 

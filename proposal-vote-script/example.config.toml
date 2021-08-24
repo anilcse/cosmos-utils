@@ -5,3 +5,6 @@ key_name = "validator"
 account_address = "regen1z39vhuuhz2asg3hgdw6l8hvej9ethe50rgzl"
 chain_id = "test"
 fees = "5000uregen"
+
+[scraper]
+rate = "4s"

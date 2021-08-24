@@ -7,15 +7,20 @@ import (
 )
 
 type (
+	// Scraper time interval
+	Scraper struct {
+		Rate string `mapstructure:"rate"`
+	}
 	// Config
 	Config struct {
-		RPCEndpoint    string `mapstructure:"rpc_endpoint"`
-		LCDEndpoint    string `mapstructure:"lcd_endpoint"`
-		Deamon         string `mapstructure:"deamon"`
-		KeyName        string `mapstructure:"key_name"`
-		AccountAddress string `mapstructure:"account_address"`
-		ChainID        string `mapstructure:"chain_id"`
-		Fees           string `mapstructure:"fees"`
+		RPCEndpoint    string  `mapstructure:"rpc_endpoint"`
+		LCDEndpoint    string  `mapstructure:"lcd_endpoint"`
+		Deamon         string  `mapstructure:"deamon"`
+		KeyName        string  `mapstructure:"key_name"`
+		AccountAddress string  `mapstructure:"account_address"`
+		ChainID        string  `mapstructure:"chain_id"`
+		Fees           string  `mapstructure:"fees"`
+		Scraper        Scraper `mapstructure:"scraper"`
 	}
 )
 
