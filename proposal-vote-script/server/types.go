@@ -81,8 +81,8 @@ type (
 			Option     string `json:"option"`
 		} `json:"votes"`
 		Pagination struct {
-			NextKey interface{} `json:"next_key"`
-			Total   string      `json:"total"`
+			NextKey string `json:"next_key"`
+			Total   string `json:"total"`
 		} `json:"pagination"`
 	}
 )
