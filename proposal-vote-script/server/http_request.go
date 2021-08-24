@@ -32,7 +32,7 @@ func newHTTPRequest(ops HTTPOptions) (*http.Request, error) {
 	return req, nil
 }
 
-func makeResponse(res *http.Response) (*PingResp, error) {
+func parseResponse(res *http.Response) (*PingResp, error) {
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return &PingResp{}, err
@@ -59,7 +59,7 @@ func HitHTTPTarget(ops HTTPOptions) (*PingResp, error) {
 		return nil, err
 	}
 
-	res, err := makeResponse(resp)
+	res, err := parseResponse(resp)
 	if err != nil {
 		return nil, err
 	}

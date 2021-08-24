@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	cfg, err := config.ReadFromConfigFile()
+	cfg, err := config.ReadConfigFromFile()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -22,10 +22,10 @@ func main() {
 	// Calling go routine to vote for the proposal if it's not voted
 	go func() {
 		for {
-			if err := server.VoteProposals(cfg); err != nil {
+			if err := server.Vote(cfg); err != nil {
 				fmt.Printf("Error while voting on new proposals : %v", err)
 			}
-			time.Sleep(10 * time.Second)
+			time.Sleep(5 * time.Second)
 		}
 	}()
 

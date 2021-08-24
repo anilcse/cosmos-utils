@@ -9,9 +9,10 @@ import (
 	"github.com/vitwit/cosmos-utils/proposal-vote-script/config"
 )
 
-// VoteProposals is to vote for the proposals which are in voting period
-func VoteProposals(cfg *config.Config) error {
-	var validatorVoted string
+// Vote is to vote for the proposals which are in voting period
+// and pending for user vote
+func Vote(cfg *config.Config) error {
+	var isVoted string
 
 	ops := HTTPOptions{
 		Endpoint: cfg.LCDEndpoint + "/cosmos/gov/v1beta1/proposals?proposal_status=2",
@@ -38,7 +39,6 @@ func VoteProposals(cfg *config.Config) error {
 	}
 
 	for _, proposal := range p.Proposals {
-		// if proposal.Status == "PROPOSAL_STATUS_VOTING_PERIOD" {
 		log.Printf("Voting period proposal ID : %v", proposal.ProposalID)
 
 		ops = HTTPOptions{
@@ -61,25 +61,24 @@ func VoteProposals(cfg *config.Config) error {
 
 		for _, value := range v.Votes {
 			if value.Voter == cfg.AccountAddress {
-				validatorVoted = value.Option
+				isVoted = value.Option
 				break
 			}
 		}
 
-		log.Printf("Vote Option : %v for proposal ID : %v", validatorVoted, proposal.ProposalID)
+		log.Printf("Vote Option : %v for proposal ID : %v", isVoted, proposal.ProposalID)
 
-		if validatorVoted == "VOTE_OPTION_NO" || validatorVoted == "" {
+		if isVoted == "VOTE_OPTION_UNSPECIFIED" || isVoted == "" {
 			cmd := exec.Command(cfg.Deamon, "tx", "gov", "vote", proposal.ProposalID, "yes", "--from", cfg.KeyName, "--chain-id", cfg.ChainID, "--keyring-backend", "test", "--fees", cfg.Fees, "-y")
 			log.Printf("Vote command : %v", cmd)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
-				log.Printf("Error while running vote tx : %v : %v", err, cmd)
+				log.Printf("Error while casting vote : %v : %v", err, cmd)
 				return err
 			}
 
 			log.Printf("Output : %v ", string(out))
 		}
-		// }
 	}
 	return nil
 }

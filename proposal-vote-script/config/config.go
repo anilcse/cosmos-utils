@@ -19,8 +19,8 @@ type (
 	}
 )
 
-//ReadFromConfigFile to read config details using viper
-func ReadFromConfigFile() (*Config, error) {
+// ReadConfigFromFile to read config details from file using viper
+func ReadConfigFromFile() (*Config, error) {
 	v := viper.New()
 	v.AddConfigPath(".")
 	v.AddConfigPath("./config/")
@@ -41,7 +41,7 @@ func ReadFromConfigFile() (*Config, error) {
 	return &cfg, nil
 }
 
-//Validate config struct
+// Validate config struct
 func (c *Config) Validate(e ...string) error {
 	v := validator.New()
 	if len(e) == 0 {
