@@ -72,6 +72,7 @@ func Vote(cfg *config.Config) error {
 	return nil
 }
 
+// GetVoterStatus is to get the response of particular proposal vote status based on proposal ID
 func GetVoterStatus(ops HTTPOptions) (ProposalVoters, error) {
 	var v ProposalVoters
 	resp, err := HitHTTPTarget(ops)
