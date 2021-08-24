@@ -34,10 +34,6 @@ func Vote(cfg *config.Config) error {
 
 	log.Printf("Length of voting proposals : %v", len(p.Proposals))
 
-	if p.Proposals == nil {
-		log.Println("No voting period proposals")
-	}
-
 	for _, proposal := range p.Proposals {
 		log.Printf("Voting period proposal ID : %v", proposal.ProposalID)
 		isVoted = false
