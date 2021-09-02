@@ -1,0 +1,21 @@
+
+# Configure this field to yes if you want to get telegram alerts about balance changes
+enable_alerts = "yes"
+
+[regular_status_alerts]
+alert_timings = ["02:30PM","02:30AM"]
+
+# Configure telegarm bot details to  get alerts
+[telegram]
+tg_chat_id = 2282123405
+tg_bot_token = "1533624405:A12567yHww-sT4X-5I_q29rKK8yvWR_T4"
+
+# Configure your mongodb database name and username if any
+[mongodb]
+database = "relayer"
+username = ""
+password = ""
+
+[scraper]
+rate = "3s"
+daily_alerts = "60s"
