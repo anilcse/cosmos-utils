@@ -36,7 +36,8 @@ echo "--------- Install $DAEMON ---------"
 go get $GH_URL
 cd ~/go/src/$GH_URL
 git fetch && git checkout $CHAIN_VERSION
-make install
+make build
+cp ./build/$DAEMON ~/go/bin/
 
 # check version
 $DAEMON version --long
@@ -56,7 +57,7 @@ cp cosmovisor $GOBIN/cosmovisor
 echo "Setting up cosmovisor directories"
 mkdir -p $DAEMON_HOME/cosmovisor
 mkdir -p $DAEMON_HOME/cosmovisor/genesis/bin
-cp $(which regen) $DAEMON_HOME/cosmovisor/genesis/bin/
+cp $(which $DAEMON) $DAEMON_HOME/cosmovisor/genesis/bin/
 
 mkdir -p $DAEMON_HOME/cosmovisor/upgrades/$UPGRADE_TITLE/bin
 
@@ -75,7 +76,7 @@ $DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME
 echo "----------Update chain config---------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
-sed -i '/minimum-gas-prices =/c\minimum-gas-prices = "'"0.0025$DENOM"'"' $DAEMON_HOME/config/app.toml
+# sed -i '/minimum-gas-prices =/c\minimum-gas-prices = "'"0.0025$DENOM"'"' $DAEMON_HOME/config/app.toml
 # sed -i '/pruning = "default"/c\pruning = "nothing"' $DAEMON_HOME/config/app.toml
 sed -i '/timeout_commit = "5s"/c\timeout_commit = "300ms"' $DAEMON_HOME/config/config.toml
 
@@ -118,7 +119,7 @@ echo "[Unit]
 Description=Cosmovisor daemon
 After=network-online.target
 [Service]
-Environment="DAEMON_NAME=regen"
+Environment="DAEMON_NAME=${DAEMON}"
 Environment="DAEMON_HOME=${DAEMON_HOME}"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=on"
 Environment="DAEMON_POLL_INTERVAL=1000"
@@ -148,28 +149,28 @@ echo
 
 sleep 2s
 
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 100000000000$DENOM  --from w2 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 600000000000$DENOM  --from w3 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking delegate $VAL_OPR_ADDRESS 900000000000$DENOM  --from w5 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
+$CLI tx staking unbond $VAL_OPR_ADDRESS 100000000000$DENOM  --from w1 --keyring-backend test --chain-id $CHAINID --node $NODE -y --home $DAEMON_HOME
 
 $CLI query staking validators -o json 
 
 echo "All set!!! Let's try some upgrade"
 
 echo "Submit upgrade proposal"
-$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx gov submit-proposal software-upgrade "$UPGRADE_TITLE" --upgrade-height $((UPGRADE_BLOCK_HEIGHT)) --title "$UPGRADE_TITLE" --description "$UPGRADE_TITLE" --deposit 10000000$DENOM --from w5 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
 sleep 2
 echo
 echo "Query proposal"
 $CLI query gov proposal 1 --chain-id $CHAINID  -o json --node $NODE --home $DAEMON_HOME
 echo
 echo "Vote for proposal"
-$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
-$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME --fees 5000$DENOM
+$CLI tx gov vote 1 yes --from validator --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
+$CLI tx gov vote 1 yes --from w3 --chain-id $CHAINID --node $NODE -y --keyring-backend test --home $DAEMON_HOME
 sleep 2
 echo
 echo "Query proposal votes"
