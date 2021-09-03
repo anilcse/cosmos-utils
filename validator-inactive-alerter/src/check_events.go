@@ -65,7 +65,7 @@ func SubscribeEvents(client *rpchttp.HTTP, ctx context.Context, cfg *config.Conf
 
 			for _, value := range eventBlock.ResultBeginBlock.Events {
 				if value.Type == slashingTypes.EventTypeSlash {
-					log.Printf("liveness response : %v", value.Attributes)
+					log.Printf("slash response : %v", value.Attributes)
 					for _, a := range value.Attributes {
 						log.Printf("key : %v and value : %v", string(a.Key), string(a.Value))
 
