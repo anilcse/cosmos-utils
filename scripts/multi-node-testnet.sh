@@ -55,16 +55,48 @@ mkdir -p "$DAEMON_HOME_4"
 
 echo "--------Start initializing the chain ($CHAINID)---------"
 
-$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME
+$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_1
+$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_2
+$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_3
+$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_4
 
 echo "----------Update chain config---------"
 
-sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
+echo "----------Updating $DEAMON_HOME_1 chain config-----------"
+
+sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME_1/config/config.toml
+sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
 sed -i 's/"timeout_commit" = "5s"'
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME/config/genesis.json
-#sed -i 's/"signed_blocks_window": "100"/"signed_blocks_window": "10"/g' $DAEMON_HOME/config/genesis.json #10 blocks slashing window to test slashing
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_1/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME_1/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME_1/config/genesis.json
+
+echo "----------Updating $DEAMON_HOME_2 chain config-----------"
+
+sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME_2/config/config.toml
+sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:26656#g' $DAEMON_HOME_2/config/config.toml
+sed -i 's/"timeout_commit" = "5s"'
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_2/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME_2/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME_2/config/genesis.json
+
+echo "----------Updating $DEAMON_HOME_3 chain config------------"
+
+sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:36657#g' $DAEMON_HOME_3/config/config.toml
+sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:36656#g' $DAEMON_HOME_3/config/config.toml
+sed -i 's/"timeout_commit" = "5s"'
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_3/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME_3/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME_3/config/genesis.json
+
+echo "----------Updating $DEAMON_HOME_4 chain config------------"
+
+sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:46657#g' $DAEMON_HOME_4/config/config.toml
+sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:46656#g' $DAEMON_HOME_4/config/config.toml
+sed -i 's/"timeout_commit" = "5s"'
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_4/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME_4/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME_4/config/genesis.json
 
 $DAEMON keys add w1 --keyring-backend test --home $DAEMON_HOME
 $DAEMON keys add w2 --keyring-backend test --home $DAEMON_HOME
