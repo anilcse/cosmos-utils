@@ -127,13 +127,18 @@ $DAEMON gentx validator4 90000000000$DENOM --chain-id $CHAINID  --keyring-backen
 
 echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
 
-sudo cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx
-sudo cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx
-sudo cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx
+sudo cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+sudo cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+sudo cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 
 $DAEMON collect-gentxs --home $DAEMON_HOME_1
 
-VAL_OPR_ADDRESS=$($CLI keys show validator -a --bech val --keyring-backend test)
+echo "---------Distribute genesis.json to remaining nodes-------"
+
+sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
+sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
+sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
+
 
 echo "---------Creating system file---------"
 
