@@ -98,12 +98,12 @@ sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_4/config/genesis.json
 sed -i "s/172800s/600s/g" $DAEMON_HOME_4/config/genesis.json
 sed -i "s/stake/$DENOM/g" $DAEMON_HOME_4/config/genesis.json
 
-$DAEMON keys add w1 --keyring-backend test --home $DAEMON_HOME
-$DAEMON keys add w2 --keyring-backend test --home $DAEMON_HOME
-$DAEMON keys add w3 --keyring-backend test --home $DAEMON_HOME
-$DAEMON keys add w4 --keyring-backend test --home $DAEMON_HOME
-$DAEMON keys add w5 --keyring-backend test --home $DAEMON_HOME
-$DAEMON keys add validator --keyring-backend test --home $DAEMON_HOME
+echo "---------Create four validators-------------"
+
+$DAEMON keys add validator1 --keyring-backend test --home $DAEMON_HOME_1
+$DAEMON keys add validator2 --keyring-backend test --home $DAEMON_HOME_2
+$DAEMON keys add validator3 --keyring-backend test --home $DAEMON_HOME_3
+$DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
 
 echo "----------Genesis creation---------"
 
