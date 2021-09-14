@@ -17,21 +17,35 @@ else
     echo "withdraw-rewards tx is failed!!!!   txHash is : $wrtxHash"
 fi
 
-echo "------ Running withdraw-all-rewards tx --------"
+echo "--------- Running withdraw-rewards commission command-----------"
 
-tx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --node $NODE -y)
-#echo "${tx}"
-code=$(echo "${tx}"| jq -r '.code')
-txHash=$(echo "${tx}" | jq -r '.txhash')
-echo $code
-echo $txHash
-if [ "$code" -eq 0 ];
+wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --commission --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+#echo $wrTx
+wrcCode=$(echo "${wrcTx}"| jq -r '.code')
+wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
+echo $wrcCode
+echo $wrctxHash
+if [ "$wrcCode" -eq 0 ];
 then
-    echo "withdraw-all-rewards tx is successfull!!  txHash is : $txHash"
+    echo "withdraw-rewards commission tx is successfull!!  txHash is : $wrctxHash"
 else 
-    echo "withdraw-all-rewards tx is failed!!!!   txHash is : $txHash"
+    echo "withdraw-rewards comission tx is failed!!!!   txHash is : $wrctxHash"
 fi
 
+echo "------ Running withdraw-all-rewards tx --------"
+
+wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --node $NODE -y)
+#echo "${tx}"
+warcode=$(echo "${wartx}"| jq -r '.code')
+wartxHash=$(echo "${wartx}" | jq -r '.txhash')
+echo $warcode
+echo $wartxHash
+if [ "$warcode" -eq 0 ];
+then
+    echo "withdraw-all-rewards tx is successfull!!  txHash is : $wartxHash"
+else 
+    echo "withdraw-all-rewards tx is failed!!!!   txHash is : $wartxHash"
+fi
 
 
 #$DAEMON tx distribution withdraw-rewards --from $KEY --fees $FEE --chain-id $CHAINID --keyring-backend test --node $NODE -y
