@@ -98,7 +98,7 @@ sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_4/config/genesis.json
 sed -i "s/172800s/600s/g" $DAEMON_HOME_4/config/genesis.json
 sed -i "s/stake/$DENOM/g" $DAEMON_HOME_4/config/genesis.json
 
-echo "---------Create four validators-------------"
+echo "---------Create four keys-------------"
 
 $DAEMON keys add validator1 --keyring-backend test --home $DAEMON_HOME_1
 $DAEMON keys add validator2 --keyring-backend test --home $DAEMON_HOME_2
@@ -107,21 +107,23 @@ $DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
 
 echo "----------Genesis creation---------"
 
-# Now its time to construct the genesis file
-CURRENT_TIME_SECONDS=$(( date +%s ))
-VESTING_STARTTIME=$(( $CURRENT_TIME_SECONDS + 10 ))
-VESTING_ENDTIME=$(( $CURRENT_TIME_SECONDS + 10000 ))
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account validator1 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_2 add-genesis-account validator2 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_3 add-genesis-account validator3 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_4 add-genesis-account validator4 1000000000000$DENOM  --keyring-backend test
 
-$DAEMON --home $DAEMON_HOME add-genesis-account w1 --keyring-backend test 1000000000000$DENOM --vesting-amount 1000000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON --home $DAEMON_HOME add-genesis-account w5 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME add-genesis-account validator 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME add-genesis-account faucet 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME add-genesis-account w2 --keyring-backend test 1000000000000$DENOM --vesting-amount 100000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON --home $DAEMON_HOME add-genesis-account w3 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
-$DAEMON --home $DAEMON_HOME add-genesis-account w4 --keyring-backend test 1000000000000$DENOM --vesting-amount 500000000000$DENOM --vesting-start-time $VESTING_STARTTIME --vesting-end-time $VESTING_ENDTIME
+$DAEMON gentx validator1 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_1
+$DAEMON gentx validator2 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_2
+$DAEMON gentx validator3 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_3
+$DAEMON gentx validator4 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_4
 
-$DAEMON gentx validator 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME
-$DAEMON collect-gentxs --home $DAEMON_HOME
+echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
+
+sudo cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx
+sudo cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx
+sudo cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx
+
+$DAEMON collect-gentxs --home $DAEMON_HOME_1
 
 VAL_OPR_ADDRESS=$($CLI keys show validator -a --bech val --keyring-backend test)
 
