@@ -35,7 +35,6 @@ fi
 echo "------ Running withdraw-all-rewards tx --------"
 
 wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --node $NODE -y)
-#echo "${tx}"
 warcode=$(echo "${wartx}"| jq -r '.code')
 wartxHash=$(echo "${wartx}" | jq -r '.txhash')
 echo $warcode
