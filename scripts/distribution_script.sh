@@ -5,11 +5,9 @@ printf "Exported values::\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n
 echo "--------- Running withdraw-rewards command-----------"
 
 wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
-#echo $wrTx
 wrCode=$(echo "${wrTx}"| jq -r '.code')
 wrtxHash=$(echo "${wrTx}" | jq '.txhash')
-echo $wrCode
-echo $wrtxHash
+echo "Code is : $wrCode"
 if [ "$wrCode" -eq 0 ];
 then
     echo "withdraw-rewards tx is successfull!!  txHash is : $wrtxHash"
@@ -23,8 +21,7 @@ wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY
 #echo $wrTx
 wrcCode=$(echo "${wrcTx}"| jq -r '.code')
 wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
-echo $wrcCode
-echo $wrctxHash
+echo "Code is : $wrcCode"
 if [ "$wrcCode" -eq 0 ];
 then
     echo "withdraw-rewards commission tx is successfull!!  txHash is : $wrctxHash"
@@ -37,16 +34,10 @@ echo "------ Running withdraw-all-rewards tx --------"
 wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --node $NODE -y)
 warcode=$(echo "${wartx}"| jq -r '.code')
 wartxHash=$(echo "${wartx}" | jq -r '.txhash')
-echo $warcode
-echo $wartxHash
+echo "Code is : $warcode"
 if [ "$warcode" -eq 0 ];
 then
     echo "withdraw-all-rewards tx is successfull!!  txHash is : $wartxHash"
 else 
     echo "withdraw-all-rewards tx is failed!!!!   txHash is : $wartxHash"
 fi
-
-
-#$DAEMON tx distribution withdraw-rewards --from $KEY --fees $FEE --chain-id $CHAINID --keyring-backend test --node $NODE -y
-#sleep 10
-#tx=$("${DAEMON}" tx bank send test1 regen1jmwm6xxwgzwmsfmwjz7eqfmqtupfks8jd40npy 1000uregen --fees 10uregen --chain-id "${CHAINID}" -y)
