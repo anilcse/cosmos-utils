@@ -140,7 +140,7 @@ sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
 sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
 
 
-echo "---------Creating system file---------"
+echo "---------Creating $DAEMON_HOME_1 system file---------"
 
 echo "[Unit]
 Description=${DAEMON} daemon
@@ -148,26 +148,121 @@ After=network.target
 [Service]
 Type=simple
 User=$USER
-ExecStart=$(which $DAEMON) start --home $DAEMON_HOME
+ExecStart=$(which $DAEMON) start --home $DAEMON_HOME_1
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
 WantedBy=multi-user.target
-">$DAEMON.service
+">$DAEMON_HOME_1.service
 
-sudo mv $DAEMON.service /lib/systemd/system/$DAEMON.service
+sudo mv $DAEMON_HOME_1.service /lib/systemd/system/$DAEMON_HOME_1.service
 
-echo "-------Start $DAEMON service-------"
+echo "-------Start $DAEMON_HOME_1 service-------"
 
 sudo -S systemctl daemon-reload
-sudo -S systemctl start $DAEMON
+sudo -S systemctl start $DAEMON_HOME_1
 
 sleep 10s
 
-echo "Checking chain status"
+echo "Checking $DAEMON_HOME_1 chain status"
 
-$CLI status --home $DAEMON_HOME
+$CLI status --home $DAEMON_HOME_1
 
 echo
+echo
+
+echo "---------Creating $DAEMON_HOME_2 system file---------"
+
+echo "[Unit]
+Description=${DAEMON} daemon
+After=network.target
+[Service]
+Type=simple
+User=$USER
+ExecStart=$(which $DAEMON) start --home $DAEMON_HOME_2
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=4096
+[Install]
+WantedBy=multi-user.target
+">$DAEMON_HOME_2.service
+
+sudo mv $DAEMON_HOME_2.service /lib/systemd/system/$DAEMON_HOME_2.service
+
+echo "-------Start $DAEMON_HOME_2 service-------"
+
+sudo -S systemctl daemon-reload
+sudo -S systemctl start $DAEMON_HOME_2
+
+sleep 10s
+
+echo "Checking $DAEMON_HOME_2 chain status"
+
+$CLI status --home $DAEMON_HOME_2
+
+echo
+echo
+
+echo "---------Creating $DAEMON_HOME_3 system file---------"
+
+echo "[Unit]
+Description=${DAEMON} daemon
+After=network.target
+[Service]
+Type=simple
+User=$USER
+ExecStart=$(which $DAEMON) start --home $DAEMON_HOME_3
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=4096
+[Install]
+WantedBy=multi-user.target
+">$DAEMON_HOME_3.service
+
+sudo mv $DAEMON_HOME_3.service /lib/systemd/system/$DAEMON_HOME_3.service
+
+echo "-------Start $DAEMON_HOME_3 service-------"
+
+sudo -S systemctl daemon-reload
+sudo -S systemctl start $DAEMON_HOME_3
+
+sleep 10s
+
+echo "Checking $DAEMON_HOME_3 chain status"
+
+$CLI status --home $DAEMON_HOME_3
+
+echo
+echo
+
+echo "---------Creating $DAEMON_HOME_4 system file---------"
+
+echo "[Unit]
+Description=${DAEMON} daemon
+After=network.target
+[Service]
+Type=simple
+User=$USER
+ExecStart=$(which $DAEMON) start --home $DAEMON_HOME_4
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=4096
+[Install]
+WantedBy=multi-user.target
+">$DAEMON_HOME_4.service
+
+sudo mv $DEAMON_HOME_4.service /lib/systemd/system/$DAEMON_HOME_4.service
+
+echo "-------Start $DAEMON_HOME_4 service-------"
+
+sudo -S systemctl daemon-reload
+sudo -S systemctl start $DAEMON_HOME_4
+
+sleep 10s
+
+echo "Checking $DAEMON_HOME_4 chain status"
+
+$CLI status --home $DEAMON_HOME_4
+
 echo
