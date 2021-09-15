@@ -1,6 +1,15 @@
 #/bin/sh
 
-printf "Exported values::\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE :$FEE\n ValidatorAddress : $VALADDRESS\n DestinationValidatorAddress: $DSTVALADDR\n Amount : $AMOUNT\n"
+
+display_usage() {
+    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE :$FEE\n ValidatorAddress : $VALADDRESS\n DestinationValidatorAddress: $DSTVALADDR\n Amount : $AMOUNT\n"
+    exit 1
+}
+
+if [ -z $DAEMON ] || [ -z $KEY ] || [ -z $CHAINID ] || [ -z $NODE ] || [ -z $FEE ] || [ -z $VALADDRESS ] || [ -z $DSTVALADDR] || [ -z $AMOUNT]
+then 
+    display_usage
+fi
 
 echo
 echo "--------- Running delegate tx command-----------"
