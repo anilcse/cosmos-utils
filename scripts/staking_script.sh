@@ -14,7 +14,7 @@ fi
 echo
 echo "--------- Running delegate tx command-----------"
 
-dTx=$("${DAEMON}" tx staking delegate "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+dTx=$("${DAEMON}" tx staking delegate "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 dTxCode=$(echo "${dTx}"| jq -r '.code')
 dtxHash=$(echo "${dTx}" | jq '.txhash')
 echo "Code is : $dTxCode"
@@ -30,7 +30,7 @@ echo
 
 echo "--------- Running redelegate tx command-----------"
 
-rdTx=$("${DAEMON}" tx staking redelegate "${VALADDRESS}" "${DSTVALADDR}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+rdTx=$("${DAEMON}" tx staking redelegate "${VALADDRESS}" "${DSTVALADDR}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 rdTxCode=$(echo "${rdTx}"| jq -r '.code')
 rdtxHash=$(echo "${rdTx}" | jq '.txhash')
 echo "Code is : $rdTxCode"
@@ -46,7 +46,7 @@ echo
 
 echo "--------- Running unbond tx command-----------"
 
-ubTx=$("${DAEMON}" tx staking unbond "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+ubTx=$("${DAEMON}" tx staking unbond "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 #echo $ubTx
 ubTxCode=$(echo "${ubTx}"| jq -r '.code')
 ubtxHash=$(echo "${ubTx}" | jq '.txhash')
