@@ -4,7 +4,7 @@ printf "Exported values::\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n
 
 echo "--------- Running withdraw-rewards command-----------"
 
-wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 wrCode=$(echo "${wrTx}"| jq -r '.code')
 wrtxHash=$(echo "${wrTx}" | jq '.txhash')
 echo "Code is : $wrCode"
@@ -17,7 +17,7 @@ fi
 
 echo "--------- Running withdraw-rewards commission command-----------"
 
-wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --commission --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $KEY --commission --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 #echo $wrTx
 wrcCode=$(echo "${wrcTx}"| jq -r '.code')
 wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
@@ -31,7 +31,7 @@ fi
 
 echo "------ Running withdraw-all-rewards tx --------"
 
-wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --node $NODE -y)
+wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --keyring-backend test --node $NODE -y)
 warcode=$(echo "${wartx}"| jq -r '.code')
 wartxHash=$(echo "${wartx}" | jq -r '.txhash')
 echo "Code is : $warcode"
