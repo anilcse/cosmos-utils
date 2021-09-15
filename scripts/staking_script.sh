@@ -27,9 +27,26 @@ echo "Code is : $rdTxCode"
 echo
 if [ "$rdTxCode" -eq 0 ];
 then
-    echo "**** Delegate tx is SUCCESSFULL!!  txHash is : $rdtxHash ****"
+    echo "**** Redelegate tx is SUCCESSFULL!!  txHash is : $rdtxHash ****"
 else 
-    echo "**** Delegate tx is FAILED!!!!   txHash is : $rdtxHash  ***"
+    echo "**** Redelegate tx is FAILED!!!!   txHash is : $rdtxHash  ***"
+fi
+
+echo
+
+echo "--------- Running unbond tx command-----------"
+
+ubTx=$("${DAEMON}" tx staking unbond "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --node "${NODE}" -y)
+echo $ubTx
+ubTxCode=$(echo "${ubTx}"| jq -r '.code')
+ubtxHash=$(echo "${ubTx}" | jq '.txhash')
+echo "Code is : $ubTxCode"
+echo
+if [ "$ubTxCode" -eq 0 ];
+then
+    echo "**** Unbond tx is SUCCESSFULL!!  txHash is : $ubtxHash ****"
+else 
+    echo "**** Unbond tx is FAILED!!!!   txHash is : $ubtxHash  ***"
 fi
 
 echo
