@@ -1,6 +1,13 @@
 #/bin/sh
 
-printf "Exported values::\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE :$FEE\n ValidatorAddress : $VALADDRESS\n"
+display_usage() {
+    printf "Please check the exported values::\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE : $FEE\n ValidatorAddress : $VALADDRESS\n"
+}
+
+if [ -z $DAEMON ] || [ -z $KEY ] || [ -z $CHAINID ] || [ -z $NODE ] || [ -z $FEE ] || [ -z $VALADDRESS ]
+then 
+    display_usage
+fi
 
 echo
 echo "--------- Running withdraw-rewards tx-----------"
