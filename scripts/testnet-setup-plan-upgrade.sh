@@ -48,7 +48,7 @@ $DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME
 echo "----------Update chain config---------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME/config/config.toml
-sed -i 's/"timeout_commit" = "5s"'
+sed -i 's/"timeout_commit" = "300ms"' $DAEMON_HOME/config/config.toml
 sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/172800s/600s/g" $DAEMON_HOME/config/genesis.json
 sed -i "s/stake/$DENOM/g" $DAEMON_HOME/config/genesis.json
