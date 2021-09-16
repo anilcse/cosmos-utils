@@ -30,36 +30,50 @@ v4=$(echo "${va4}" | jq -r '.address')
 echo "** validator4 address :: $v4 **"
 
 echo
-echo "--------- Running delegate tx from validator1 to validator2-----------"
+echo "--------- Delegation from validator1 to validator2-----------"
 
-regen keys show validator --bech val --keyring-backend test //check
-
-
-dTx=$("${DAEMON}" tx staking delegate "${VALADDRESS}" "${AMOUNT}" --from validator1 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+dTx=$("${DAEMON}" tx staking delegate "${v2}" "${AMOUNT}" --from validator1 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 dTxCode=$(echo "${dTx}"| jq -r '.code')
 dtxHash=$(echo "${dTx}" | jq '.txhash')
 echo "Code is : $dTxCode"
 echo
 if [ "$dTxCode" -eq 0 ];
 then
-    echo "**** Delegate tx is SUCCESSFULL!!  txHash is : $dtxHash ****"
+    echo "**** Delegation from validator1 to validator2 is SUCCESSFULL!!  txHash is : $dtxHash ****"
 else 
-    echo "**** Delegate tx is FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
+    echo "**** Delegation from validator1 to validator2 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
 fi
 
 echo
-echo "--------- Running delegate tx command-----------"
+echo "--------- Delegation from validator2 to validator3-----------"
 
-dTx=$("${DAEMON}" tx staking delegate "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+dTx=$("${DAEMON}" tx staking delegate "${v3}" "${AMOUNT}" --from validator2 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
 dTxCode=$(echo "${dTx}"| jq -r '.code')
 dtxHash=$(echo "${dTx}" | jq '.txhash')
 echo "Code is : $dTxCode"
 echo
 if [ "$dTxCode" -eq 0 ];
 then
-    echo "**** Delegate tx is SUCCESSFULL!!  txHash is : $dtxHash ****"
+    echo "**** Delegation from validator2 to validator3 is SUCCESSFULL!!  txHash is : $dtxHash ****"
 else 
-    echo "**** Delegate tx is FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
+    echo "**** Delegation from validator2 to validator3 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
+fi
+
+echo
+
+echo
+echo "--------- Delegation from validator3 to validator4 -----------"
+
+dTx=$("${DAEMON}" tx staking delegate "${v4}" "${AMOUNT}" --from validator3 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+dTxCode=$(echo "${dTx}"| jq -r '.code')
+dtxHash=$(echo "${dTx}" | jq '.txhash')
+echo "Code is : $dTxCode"
+echo
+if [ "$dTxCode" -eq 0 ];
+then
+    echo "**** Delegation from validator3 to validator4 is SUCCESSFULL!!  txHash is : $dtxHash ****"
+else 
+    echo "**** Delegation from validator3 to validator4 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
 fi
 
 echo
