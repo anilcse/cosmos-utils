@@ -31,127 +31,125 @@ echo "** validator4 address :: $v4 **"
 
 echo
 
-#Start of for loop
+#Start of for loop to run delegation txs
 for a in 1 2 3
 do
-    # if a is equal to 5 break the loop
     if [ $a == 1 ]
     then
-        from=$v1
+        from="validator1"
         to=$v2
-        key="validator1"
-        key2="validator2"
+        toKey="validator2"
     elif [ $a == 2 ]
     then
-        from=$v2
+        from="validator2"
         to=$v3
-        key="validator2"
-        key2="validator3"
+        toKey="validator3"
     else [ $a == 3 ]
-        from=$v3
+        from="validator3"
         to=$v4
-        key="validator3"
-        key2="validator4"
+        toKey="validator4"
     fi
     # Print the value
-    echo "Iteration no $a and values from : $from to : $to"
-    echo "--------- Delegation from $key to $key2-----------"
+    echo "Iteration no $a and values of from : $from to : $to"
+    echo "--------- Delegation from $from to $toKey-----------"
 
-    dTx=$("${DAEMON}" tx staking delegate "${to}" "${AMOUNT}" --from $key --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    dTx=$("${DAEMON}" tx staking delegate "${to}" "${AMOUNT}" --from $from --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
     dTxCode=$(echo "${dTx}"| jq -r '.code')
     dtxHash=$(echo "${dTx}" | jq '.txhash')
     echo "Code is : $dTxCode"
     echo
     if [ "$dTxCode" -eq 0 ];
     then
-        echo "**** Delegation from $key to $key2 is SUCCESSFULL!!  txHash is : $dtxHash ****"
+        echo "**** Delegation from $from to $toKey is SUCCESSFULL!!  txHash is : $dtxHash ****"
     else 
-        echo "**** Delegation from $key to $key2 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
+        echo "**** Delegation from $from to $toKey has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
     fi
+    echo
 done
 
-exit 1
-
-echo "--------- Delegation from validator1 to validator2-----------"
-
-dTx=$("${DAEMON}" tx staking delegate "${v2}" "${AMOUNT}" --from validator1 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-dTxCode=$(echo "${dTx}"| jq -r '.code')
-dtxHash=$(echo "${dTx}" | jq '.txhash')
-echo "Code is : $dTxCode"
-echo
-if [ "$dTxCode" -eq 0 ];
-then
-    echo "**** Delegation from validator1 to validator2 is SUCCESSFULL!!  txHash is : $dtxHash ****"
-else 
-    echo "**** Delegation from validator1 to validator2 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
-fi
-
-echo
-echo "--------- Delegation from validator2 to validator3-----------"
-
-dTx=$("${DAEMON}" tx staking delegate "${v3}" "${AMOUNT}" --from validator2 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-dTxCode=$(echo "${dTx}"| jq -r '.code')
-dtxHash=$(echo "${dTx}" | jq '.txhash')
-echo "Code is : $dTxCode"
-echo
-if [ "$dTxCode" -eq 0 ];
-then
-    echo "**** Delegation from validator2 to validator3 is SUCCESSFULL!!  txHash is : $dtxHash ****"
-else 
-    echo "**** Delegation from validator2 to validator3 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
-fi
-
 echo
 
+#Start of for loop to run redelegation txs
+for a in 1 2 3 4
+do
+    if [ $a == 1 ]
+    then
+        from=$v4
+        to=$v3
+        fromKey="validator4"
+        toKey="validator3"
+    elif [ $a == 2 ]
+    then
+        from=$v3
+        to=$v2
+        fromKey="validator3"
+        toKey="validator2"
+    elif [ $a == 3 ]
+    then
+        from=$v2
+        to=$v1
+        fromKey="validator2"
+        toKey="validator1"
+    else [$a == 4]
+        from=$v4
+        to=$v3
+        fromKey="validator4"
+        toKey="validator3"
+    fi
+    # Print the value
+    echo "Iteration no $a and values of from : $from to : $to"
+    echo "--------- Redelegation from $from to $toKey-----------"
+
+    rdTx=$("${DAEMON}" tx staking redelegate "${v4}" "${v3}" "${AMOUNT}" --from $fromKey --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    rdTxCode=$(echo "${rdTx}"| jq -r '.code')
+    rdtxHash=$(echo "${rdTx}" | jq '.txhash')
+    echo "Code is : $rdTxCode"
+    echo
+    if [ "$rdTxCode" -eq 0 ];
+    then
+        echo "**** Redelegation from $fromKey to $toKey is SUCCESSFULL!!  txHash is : $rdtxHash ****"
+    else 
+        echo "**** Redelegation from $fromKey to $toKey has FAILED!!!!   txHash is : $rdtxHash and REASON : $(echo "${rdTx}" | jq '.raw_log') ***"
+    fi
+    echo
+done
 echo
-echo "--------- Delegation from validator3 to validator4 -----------"
 
-dTx=$("${DAEMON}" tx staking delegate "${v4}" "${AMOUNT}" --from validator3 --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-dTxCode=$(echo "${dTx}"| jq -r '.code')
-dtxHash=$(echo "${dTx}" | jq '.txhash')
-echo "Code is : $dTxCode"
-echo
-if [ "$dTxCode" -eq 0 ];
-then
-    echo "**** Delegation from validator3 to validator4 is SUCCESSFULL!!  txHash is : $dtxHash ****"
-else 
-    echo "**** Delegation from validator3 to validator4 has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
-fi
+#Start of for loop to run unbond txs
+for a in 1 2 3 4
+do
+    if [ $a == 1 ]
+    then
+        from=$v1
+        fromKey="validator1"
+    elif [ $a == 2 ]
+    then
+        from=$v2
+        fromKey="validator2"
+    elif [ $a == 3 ]
+    then
+        from=$v3
+        fromKey="validator3"
+    else
+        from=$v4
+        fromKey="validator4"
+    fi
+    # Print the value
+    echo "Iteration no $a and values of from : $from and fromKey : $fromKey"
+    echo "--------- Running unbond tx command-----------"
 
-echo
-
-echo "--------- Redelegation from validator4 to validator3 -----------"
-
-rdTx=$("${DAEMON}" tx staking redelegate "${v4}" "${v3}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-rdTxCode=$(echo "${rdTx}"| jq -r '.code')
-rdtxHash=$(echo "${rdTx}" | jq '.txhash')
-echo "Code is : $rdTxCode"
-echo
-if [ "$rdTxCode" -eq 0 ];
-then
-    echo "**** Redelegation from validator4 to validator3 is SUCCESSFULL!!  txHash is : $rdtxHash ****"
-else 
-    echo "**** Redelegation from validator4 to validator3 has FAILED!!!!   txHash is : $rdtxHash and REASON : $(echo "${rdTx}" | jq '.raw_log') ***"
-fi
-
-echo
-
-
-echo
-
-echo "--------- Running unbond tx command-----------"
-
-ubTx=$("${DAEMON}" tx staking unbond "${VALADDRESS}" "${AMOUNT}" --from $KEY --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-#echo $ubTx 1000 or 10000stake to be replaced in amount
-ubTxCode=$(echo "${ubTx}"| jq -r '.code')
-ubtxHash=$(echo "${ubTx}" | jq '.txhash')
-echo "Code is : $ubTxCode"
-echo
-if [ "$ubTxCode" -eq 0 ];
-then
-    echo "**** Unbond tx is SUCCESSFULL!!  txHash is : $ubtxHash ****"
-else 
-    echo "**** Unbond tx is FAILED!!!!   txHash is : $ubtxHash  and REASON : $(echo "${ubTx}" | jq '.raw_log')  ***"
-fi
-
+    ubTx=$("${DAEMON}" tx staking unbond "${from}" "${AMOUNT}" --from $fromKey --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    #echo $ubTx 1000 or 10000stake to be replaced in amount
+    ubTxCode=$(echo "${ubTx}"| jq -r '.code')
+    ubtxHash=$(echo "${ubTx}" | jq '.txhash')
+    echo "Code is : $ubTxCode"
+    echo
+    if [ "$ubTxCode" -eq 0 ];
+    then
+        echo "**** Unbond tx of $fromKey is SUCCESSFULL!!  txHash is : $ubtxHash ****"
+    else 
+        echo "**** Unbond tx of $fromKey if FAILED!!!!   txHash is : $ubtxHash  and REASON : $(echo "${ubTx}" | jq '.raw_log')  ***"
+    fi
+    echo
+done
 echo
