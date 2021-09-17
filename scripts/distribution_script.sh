@@ -1,11 +1,11 @@
 #/bin/sh
 
 display_usage() {
-    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE : $FEE\n ValidatorAddress : $VALADDRESS\n"
-    # exit 1
+    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n Node : $NODE\n"
+    exit 1
 }
 
-if [ -z $DAEMON ] || [ -z $KEY ] || [ -z $CHAINID ] || [ -z $NODE ] || [ -z $FEE ] || [ -z $VALADDRESS ]
+if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $NODE ]
 then 
     display_usage
 fi
@@ -31,7 +31,7 @@ echo "** validator4 address :: $v4 **"
 
 echo
 
-#Start of for loop to run delegation txs
+#Start of for loop to run withdraw-rewards txs
 for a in 1 2 3 4
 do
     if [ $a == 1 ]
@@ -67,7 +67,7 @@ do
 done
 echo
 
-#Start of for loop to run delegation txs
+#Start of for loop to run withdraw-rewards commission txs
 for a in 1 2 3 4
 do
     if [ $a == 1 ]
@@ -104,17 +104,38 @@ do
 done
 echo
 
-echo "------ Running withdraw-all-rewards tx --------"
+#Start of for loop to run withdraw-all-rewards tx
+for a in 1 2 3 4
+do
+    if [ $a == 1 ]
+    then
+        FROMKEY="validator1"
+        VALADDRESS=$v1
+    elif [ $a == 2 ]
+    then
+        FROMKEY="validator2"
+        VALADDRESS=$v2
+    elif [ $a == 3 ]
+    then
+        FROMKEY="validator3"
+        VALADDRESS=$v3
+    else [ $a == 4 ]
+        FROMKEY="validator4"
+        VALADDRESS=$v4
+    fi
+    # Print the value
+    echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
+    echo "------ withdraw-all-rewards of $VALADDRESS --------"
 
-wartx=$($DAEMON tx distribution withdraw-all-rewards --from $KEY --fees $FEE --chain-id $CHAINID --keyring-backend test --node $NODE -y)
-warcode=$(echo "${wartx}"| jq -r '.code')
-wartxHash=$(echo "${wartx}" | jq -r '.txhash')
-echo "Code is : $warcode"
-if [ "$warcode" -eq 0 ];
-then
-    echo "**** withdraw-all-rewards tx is successfull!!  txHash is : $wartxHash ****"
-else 
-    echo "**** withdraw-all-rewards tx is failed!!!!   txHash is : $wartxHash and REASON : $(echo "${wartx}" | jq -r '.raw_log') ****"
-fi
-
+    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --node $NODE -y)
+    warcode=$(echo "${wartx}"| jq -r '.code')
+    wartxHash=$(echo "${wartx}" | jq -r '.txhash')
+    echo "Code is : $warcode"
+    if [ "$warcode" -eq 0 ];
+    then
+        echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) successfull!!  txHash is : $wartxHash ****"
+    else 
+        echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) failed!!!!   txHash is : $wartxHash and REASON : $(echo "${wartx}" | jq -r '.raw_log') ****"
+    fi
+done
 echo
