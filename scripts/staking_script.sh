@@ -1,11 +1,11 @@
 #/bin/sh
 
 display_usage() {
-    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Key : $KEY\n ChainID : $CHAINID\n Node : $NODE\n FEE :$FEE\n Amount : $AMOUNT\n"
-    # exit 1
+    printf "** Please check the exported values:: **\n Deamon : $DEAMON\n Denom : $DENOM\n ChainID : $CHAINID\n Node : $NODE\n"
+    exit 1
 }
 
-if [ -z $DAEMON ] || [ -z $KEY ] || [ -z $CHAINID ] || [ -z $NODE ] || [ -z $FEE ] || [ -z $AMOUNT]
+if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $NODE ]
 then 
     display_usage
 fi
@@ -36,33 +36,33 @@ for a in 1 2 3
 do
     if [ $a == 1 ]
     then
-        from="validator1"
+        fromKey="validator1"
         to=$v2
         toKey="validator2"
     elif [ $a == 2 ]
     then
-        from="validator2"
+        fromKey="validator2"
         to=$v3
         toKey="validator3"
     else [ $a == 3 ]
-        from="validator3"
+        fromKey="validator3"
         to=$v4
         toKey="validator4"
     fi
     # Print the value
-    echo "Iteration no $a and values of from : $from to : $to"
-    echo "--------- Delegation from $from to $toKey-----------"
+    echo "Iteration no $a and values of from : $fromKey to : $to"
+    echo "--------- Delegation from $from to $to-----------"
 
-    dTx=$("${DAEMON}" tx staking delegate "${to}" "${AMOUNT}" --from $from --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    dTx=$("${DAEMON}" tx staking delegate "${to}" 10000"${DENOM}" --from $fromKey --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
     dTxCode=$(echo "${dTx}"| jq -r '.code')
     dtxHash=$(echo "${dTx}" | jq '.txhash')
     echo "Code is : $dTxCode"
     echo
     if [ "$dTxCode" -eq 0 ];
     then
-        echo "**** Delegation from $from to $toKey is SUCCESSFULL!!  txHash is : $dtxHash ****"
+        echo "**** Delegation from $fromKey to $toKey is SUCCESSFULL!!  txHash is : $dtxHash ****"
     else 
-        echo "**** Delegation from $from to $toKey has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
+        echo "**** Delegation from $fromKey to $toKey has FAILED!!!!   txHash is : $dtxHash and REASON : $(echo "${dTx}" | jq '.raw_log')***"
     fi
     echo
 done
@@ -98,9 +98,9 @@ do
     fi
     # Print the value
     echo "Iteration no $a and values of from : $from to : $to"
-    echo "--------- Redelegation from $from to $toKey-----------"
+    echo "--------- Redelegation from $from to $to-----------"
 
-    rdTx=$("${DAEMON}" tx staking redelegate "${v4}" "${v3}" "${AMOUNT}" --from $fromKey --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    rdTx=$("${DAEMON}" tx staking redelegate "${from}" "${to}" 10000"${DENOM}" --from $fromKey --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
     rdTxCode=$(echo "${rdTx}"| jq -r '.code')
     rdtxHash=$(echo "${rdTx}" | jq '.txhash')
     echo "Code is : $rdTxCode"
@@ -138,8 +138,7 @@ do
     echo "Iteration no $a and values of from : $from and fromKey : $fromKey"
     echo "--------- Running unbond tx command-----------"
 
-    ubTx=$("${DAEMON}" tx staking unbond "${from}" "${AMOUNT}" --from $fromKey --fees "${FEE}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
-    #echo $ubTx 1000 or 10000stake to be replaced in amount
+    ubTx=$("${DAEMON}" tx staking unbond "${from}" 10000"${DENOM}" --from $fromKey --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
     ubTxCode=$(echo "${ubTx}"| jq -r '.code')
     ubtxHash=$(echo "${ubTx}" | jq '.txhash')
     echo "Code is : $ubTxCode"
