@@ -62,7 +62,7 @@ do
     then
         echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrtxHash ****"
     else 
-        echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is failed!!!!   txHash is : $wrtxHash and REASON : wrtxHash=$(echo "${wrTx}" | jq '.raw_log') ****"
+        echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is failed!!!!   txHash is : $wrtxHash and REASON : $(echo "${wrTx}" | jq '.raw_log') ****"
     fi
 done
 echo

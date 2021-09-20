@@ -4,6 +4,7 @@
 #regen q gov vote 1 regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9 --chain-id test
 #regen tx gov vote 1 yes --from test1 --fees 500uregen --chain-id test
 #regen q gov proposals --status voting_period --output json
+#regen q gov vote 3 regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9 --output json
 
 echo "--------- Get validator addresses -----------"
 va1=$("${DAEMON}" keys show validator1 --keyring-backend test --output json)
@@ -28,49 +29,63 @@ echo "--------Get voting period proposals--------------"
 vp=$("${DAEMON}" q gov proposals --status voting_period --output json)
 len=$(echo "${vp}" | jq -r '.proposals | length' )
 echo "** Length of voting period proposals : $len **"
+echo
 
 for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
-  # _jq() {
-  #   echo ${row} | base64 --decode | jq -r ${1}
-  # }
-  echo ${row} | base64 --decode | jq -r '.proposal_id'
+
+  PID=$(echo "${row}" | base64 --decode | jq -r '.proposal_id')
+  echo
+  echo
+  echo "** Checking votes for proposal id : $PID **"
+
+  for a in 1 2 3 4
+  do
+    if [ $a == 1 ]
+    then
+      FROMKEY="validator1"
+      VOTER=$v1
+    elif [ $a == 2 ]
+    then
+      FROMKEY="validator2"
+      VOTER=$v2
+    elif [ $a == 3 ]
+    then
+      #FROMKEY="validator3"
+      #VOTER=$v3
+      FROMKEY=test2
+      VOTER=regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9
+
+    else [ $a == 4 ]
+      #VOTER=$v4
+      #FROMKEY="validator4"
+      FROMKEY=test1
+      VOTER=regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9
+    fi
+    #echo
+    # Check vote status
+    getVote=$( ("${DAEMON}" q gov vote "${PID}" "${VOTER}" --output json) 2>&1)
+   
+    if [ "$?" -eq 0 ];
+    then
+      voted=$(echo "${getVote}" | jq -r '.option')
+      #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
+      #cast vote
+      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${NODE}" -y) 2>&1) 
+      #echo "$?... $castVote"
+      checkVote=$(echo "${castVote}"| jq -r '.code')
+      #echo "check vote response err : $checkVote"
+      txHash=$(echo "${castVote}"| jq -r '.txhash')
+      if [[ "$checkVote" != "" ]];
+      then
+        if [ "$checkVote" -eq 0 ];
+        then
+          echo "**** $FROMKEY successfully voted on the proposal :: (proposal ID : $PID and address $VOTER ) !!  txHash is : $txHash ****"
+        else 
+          echo "**** $FROMKEY getting error while casting vote for ( Proposl ID : $PID and address $VOTER )!!!!  txHash is : $txhash and REASON : $(echo "${castVote}" | jq '.raw_log') ****"
+        fi
+      fi
+    else
+      echo "Error while getting votes of proposal ID : $PID of $FROMKEY address : $VOTER"
+    fi
+  done
 done
-
-arr=$(echo "${vp}" | jq -r '.proposals | map(.proposal_id)')
-echo $arr
-for i in ${arr[@]}; do
-  echo "Value.....$i"
-done
-#echo ${arr[0]}
-#echo ${arr[@]:1:2}
-#echo ${arr[@]:0:1}
-
-echo "Print all : ${arr[@]}   and ${arr[0]}"
-# iterate through the Bash array
-#for item in "${arr[@]}"; do
-   #echo $item
-   #echo "In loop ${arr[@]:item-1:item}"
-  # do your stuff
-#done
-
-echo "ele ${arr[@]:0:1}"
-echo "ele ${arr[@]:1:2}"
-echo "ele ${arr[@]:2:3}"
-echo "ele ${arr[@]:3:4}"
-
-tl=`expr $len + $len - 1`
-echo "total len: $s"
-
-for i in $(seq 1 $tl);
-do
-    j=`expr $i - 1`
-    PID=${arr[@]:j:i}
-    echo "Proposal id i ${i} and j ${j} ${PID}" #print porposal ids
-
-    echo "${i} and ${j}  ${arr[@]:2:3} "
-
-
-    #echo "In loop ${arr[@]:item-1:item}"
-   # echo $(echo "${vp}" | jq -c '.proposals[] | .proposal_id')
-done
-
