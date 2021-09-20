@@ -1,11 +1,5 @@
 #/bin/sh
 
-#regen q gov proposals --status voting_period --output json
-#regen q gov vote 1 regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9 --chain-id test
-#regen tx gov vote 1 yes --from test1 --fees 500uregen --chain-id test
-#regen q gov proposals --status voting_period --output json
-#regen q gov vote 3 regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9 --output json
-
 echo "--------- Get validator addresses -----------"
 va1=$("${DAEMON}" keys show validator1 --keyring-backend test --output json)
 v1=$(echo "${va1}" | jq -r '.address')
@@ -50,22 +44,16 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       VOTER=$v2
     elif [ $a == 3 ]
     then
-      #FROMKEY="validator3"
-      #VOTER=$v3
-      FROMKEY=test2
-      VOTER=regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9
-
+      FROMKEY="validator3"
+      VOTER=$v3
     else [ $a == 4 ]
-      #VOTER=$v4
-      #FROMKEY="validator4"
-      FROMKEY=test1
-      VOTER=regen1lwr6t4hx0kz3nps6xtrat44h7cumyk7qnug9m9
+      VOTER=$v4
+      FROMKEY="validator4"
     fi
-    #echo
     # Check vote status
     getVote=$( ("${DAEMON}" q gov vote "${PID}" "${VOTER}" --output json) 2>&1)
    
-    if [ "$?" -eq 0 ];
+    if [ "$?" -eq 0 ];  #0 indiactes no reponse with gov vote query so we can proceed further
     then
       voted=$(echo "${getVote}" | jq -r '.option')
       #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
