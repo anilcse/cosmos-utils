@@ -4,12 +4,6 @@ command_exists () {
     type "$1" &> /dev/null ;
 }
 
-DAEMON_HOME_2=$DAEMON_HOME_1-2
-DAEMON_HOME_3=$DAEMON_HOME_1-3
-DAEMON_HOME_4=$DAEMON_HOME_1-4
-
-printf " DAEMON_HOME_1 = $DAEMON_HOME_1\n DAEMON_HOME_2 = $DAEMON_HOME_2\n DAEMON_HOME_3=$DAEMON_HOME_3\n DAEMON_HOME_4=$DAEMON_HOME_4\n"
-
 if command_exists go ; then
     echo "Golang is already installed"
 else
@@ -17,24 +11,32 @@ else
   sudo apt update
   sudo apt install build-essential jq -y
 
-  wget https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz
-  tar -xvf go1.15.2.linux-amd64.tar.gz
+  wget https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz
+  tar -xvf go1.16.8.linux-amd64.tar.gz
   sudo mv go /usr/local
 
-  echo "" >> ~/.profile
-  echo 'export GOPATH=$HOME/go' >> ~/.profile
-  echo 'export GOROOT=/usr/local/go' >> ~/.profile
-  echo 'export GOBIN=$GOPATH/bin' >> ~/.profile
-  echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >> ~/.profile
+  echo "------ Update bashrc ---------------"
+  export GOPATH=$HOME/go
+  export GOROOT=/usr/local/go
+  export GOBIN=$GOPATH/bin
+  export PATH=$PATH:/usr/local/go/bin:$GOBIN
+  echo "" >> ~/.bashrc
+  echo 'export GOPATH=$HOME/go' >> ~/.bashrc
+  echo 'export GOROOT=/usr/local/go' >> ~/.bashrc
+  echo 'export GOBIN=$GOPATH/bin' >> ~/.bashrc
+  echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >> ~/.bashrc
 
-  #source ~/.profile
-  . ~/.profile
+  source ~/.bashrc
+
+  mkdir -p "$GOBIN"
+  mkdir -p $GOPATH/src/github.com
 
   go version
 fi
 
 echo "--------- Install $DAEMON ---------"
-go get $GH_URL
+cd $GOPATH/src/github.com
+go get $GH_URL 
 cd ~/go/src/$GH_URL
 git fetch && git checkout $CHAIN_VERSION
 make install
@@ -47,6 +49,8 @@ $DAEMON version --long
 DAEMON_HOME_2=$DAEMON_HOME_1-2
 DAEMON_HOME_3=$DAEMON_HOME_1-3
 DAEMON_HOME_4=$DAEMON_HOME_1-4
+
+printf " DAEMON_HOME_1 = $DAEMON_HOME_1\n DAEMON_HOME_2 = $DAEMON_HOME_2\n DAEMON_HOME_3=$DAEMON_HOME_3\n DAEMON_HOME_4=$DAEMON_HOME_4\n"
 
 echo "---------Initializing the chain ($CHAINID)---------"
 
