@@ -4,6 +4,12 @@ command_exists () {
     type "$1" &> /dev/null ;
 }
 
+DAEMON_HOME_2=$DAEMON_HOME_1-2
+DAEMON_HOME_3=$DAEMON_HOME_1-3
+DAEMON_HOME_4=$DAEMON_HOME_1-4
+
+printf " DAEMON_HOME_1 = $DAEMON_HOME_1\n DAEMON_HOME_2 = $DAEMON_HOME_2\n DAEMON_HOME_3=$DAEMON_HOME_3\n DAEMON_HOME_4=$DAEMON_HOME_4\n"
+
 if command_exists go ; then
     echo "Golang is already installed"
 else
@@ -37,6 +43,10 @@ make install
 $DAEMON version --long
 
 #echo "----------Create test keys-----------"
+
+DAEMON_HOME_2=$DAEMON_HOME_1-2
+DAEMON_HOME_3=$DAEMON_HOME_1-3
+DAEMON_HOME_4=$DAEMON_HOME_1-4
 
 echo "---------Initializing the chain ($CHAINID)---------"
 
