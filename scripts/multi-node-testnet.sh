@@ -67,8 +67,6 @@ export DAEMON_HOME_4=$DAEMON_HOME-4
 
 printf " DAEMON_HOME_1 = $DAEMON_HOME_1\n DAEMON_HOME_2 = $DAEMON_HOME_2\n DAEMON_HOME_3=$DAEMON_HOME_3\n DAEMON_HOME_4=$DAEMON_HOME_4\n"
 
-echo "---------Initializing the chain ($CHAINID)---------"
-
 $DAEMON unsafe-reset-all  --home $DAEMON_HOME_1
 $DAEMON unsafe-reset-all  --home $DAEMON_HOME_2
 $DAEMON unsafe-reset-all  --home $DAEMON_HOME_3
@@ -162,9 +160,11 @@ sudo cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 sudo cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 sudo cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 
+echo "----------collect-gentxs------------"
+
 $DAEMON collect-gentxs --home $DAEMON_HOME_1
 
-echo "---------Distribute genesis.json to remaining nodes-------"
+echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
 
 sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
 sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
