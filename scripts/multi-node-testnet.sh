@@ -45,11 +45,7 @@ else
 fi
 
 echo "--------- Install $DAEMON ---------"
-#cd $GOPATH/src/github.com
-#go get $GH_URL 
-#cd ~/go/src/$GH_URL
-git clone $GH_URL
-cd regen-ledger
+git clone GH_URL && cd $(basename $_ .git)
 git fetch && git checkout $CHAIN_VERSION
 make install
 
