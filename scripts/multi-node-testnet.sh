@@ -1,18 +1,21 @@
 #/bin/sh
 
+display_usage() {
+    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n DaemonHome : $DAEMON_HOME\n \n Github URL : $GH_URL\n Chain Version : $CHAIN_VERSION\n"
+    exit 1
+}
+
+if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $DAEMON_HOME ] || [ -z $GH_URL ] || [ -z $CHAIN_VERSION ]
+then 
+    display_usage
+fi
+
 command_exists () {
     type "$1" &> /dev/null ;
 }
 
 cd $HOME
 
-export DAEMON_HOME=~/.regen
-export CHAINID=test
-export DENOM=uregen
-export GH_URL=https://github.com/regen-network/regen-ledger
-export CHAIN_VERSION=v1.0.0
-export DENOM=uregen
-export DAEMON=regen
 
 if command_exists go ; then
     echo "Golang is already installed"
