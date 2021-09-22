@@ -22,11 +22,13 @@ if command_exists go ; then
 else
   echo "Install dependencies"
   sudo apt update
+  sudo apt-get -y upgrade
   sudo apt install build-essential jq -y
 
   wget https://dl.google.com/go/go1.16.8.linux-amd64.tar.gz
   tar -xvf go1.16.8.linux-amd64.tar.gz
   sudo mv go /usr/local
+  rm go1.16.8.linux-amd64.tar.gz
 
   echo "------ Update bashrc ---------------"
   export GOPATH=$HOME/go
@@ -48,7 +50,7 @@ else
 fi
 
 echo "--------- Install $DAEMON ---------"
-git clone GH_URL && cd $(basename $_ .git)
+git clone $GH_URL && cd $(basename $_ .git)
 git fetch && git checkout $CHAIN_VERSION
 make install
 
@@ -81,10 +83,10 @@ mkdir -p "$DAEMON_HOME_4"
 
 echo "--------Start initializing the chain ($CHAINID)---------"
 
-$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_1
-$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_2
-$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_3
-$DAEMON init --chain-id $CHAINID $CHAINID --home $DAEMON_HOME_4
+$DAEMON init --chain-id $CHAINID $DAEMON_HOME_1 --home $DAEMON_HOME_1
+$DAEMON init --chain-id $CHAINID $DAEMON_HOME_2 --home $DAEMON_HOME_2
+$DAEMON init --chain-id $CHAINID $DAEMON_HOME_3 --home $DAEMON_HOME_3
+$DAEMON init --chain-id $CHAINID $DAEMON_HOME_4 --home $DAEMON_HOME_4
 
 echo "----------Update chain config---------"
 
@@ -106,9 +108,6 @@ sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:26656#g' $DAEMON_HOME_2/config/con
 sed -i 's/"timeout_commit" = "5s"' $DAEMON_HOME_2/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:2090#g' $DAEMON_HOME_2/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:2091#g' $DAEMON_HOME_2/config/app.toml
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_2/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME_2/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME_2/config/genesis.json
 
 echo "----------Updating $DAEMON_HOME_3 chain config------------"
 
@@ -117,9 +116,6 @@ sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:36656#g' $DAEMON_HOME_3/config/con
 sed -i 's/"timeout_commit" = "5s"' $DAEMON_HOME_3/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:3090#g' $DAEMON_HOME_3/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:3091#g' $DAEMON_HOME_3/config/app.toml
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_3/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME_3/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME_3/config/genesis.json
 
 echo "----------Updating $DAEMON_HOME_4 chain config------------"
 
@@ -128,9 +124,6 @@ sed -i 's#tcp://127.0.0.1:26656#tcp://0.0.0.0:46656#g' $DAEMON_HOME_4/config/con
 sed -i 's/"timeout_commit" = "5s"' $DAEMON_HOME_4/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:4090#g' $DAEMON_HOME_4/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:4091#g' $DAEMON_HOME_4/config/app.toml
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_4/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME_4/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME_4/config/genesis.json
 
 echo "---------Create four keys-------------"
 
@@ -142,9 +135,9 @@ $DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
 echo "----------Genesis creation---------"
 
 $DAEMON --home $DAEMON_HOME_1 add-genesis-account validator1 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_2 add-genesis-account validator2 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_3 add-genesis-account validator3 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_4 add-genesis-account validator4 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator2 -a --home $DAEMON_HOME_2 --keyring-backend test) 1000000000000$DENOM
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator3 -a --home $DAEMON_HOME_3 --keyring-backend test) 1000000000000$DENOM
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator4 -a --home $DAEMON_HOME_4 --keyring-backend test) 1000000000000$DENOM
 
 echo "--------Gentx--------"
 
@@ -155,9 +148,9 @@ $DAEMON gentx validator4 90000000000$DENOM --chain-id $CHAINID  --keyring-backen
 
 echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
 
-sudo cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
-sudo cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
-sudo cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 
 echo "----------collect-gentxs------------"
 
@@ -183,16 +176,14 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee /lib/systemd/system$DAEMON_HOME_1.service
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-1.service"
 
-#sudo mv $DAEMON_HOME_1.service /lib/systemd/system$DAEMON_HOME_1.service
-
-echo "-------Start $DAEMON_HOME_1 service-------"
+echo "-------Start $DAEMON-1 service-------"
 
 sudo -S systemctl daemon-reload
-sudo -S systemctl start $DAEMON_HOME_1
+sudo -S systemctl start $DAEMON-1.service
 
-sleep 10s
+sleep 5s
 
 echo "Checking $DAEMON_HOME_1 chain status"
 
@@ -214,16 +205,14 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee /lib/systemd/system$DAEMON_HOME_2.service
-
-#sudo mv $DAEMON_HOME_2.service /lib/systemd/system$DAEMON_HOME_2.service
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-2.service"
 
 echo "-------Start $DAEMON_HOME_2 service-------"
 
 sudo -S systemctl daemon-reload
-sudo -S systemctl start $DAEMON_HOME_2
+sudo -S systemctl start $DAEMON-2.service
 
-sleep 10s
+sleep 5s
 
 echo "Checking $DAEMON_HOME_2 chain status"
 
@@ -245,16 +234,14 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee /lib/systemd/system$DAEMON_HOME_3.service
-
-#sudo mv $DAEMON_HOME_3.service /lib/systemd/system$DAEMON_HOME_3.service
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-3.service"
 
 echo "-------Start $DAEMON_HOME_3 service-------"
 
 sudo -S systemctl daemon-reload
-sudo -S systemctl start $DAEMON_HOME_3
+sudo -S systemctl start $DAEMON-3.service
 
-sleep 10s
+sleep 5s
 
 echo "Checking $DAEMON_HOME_3 chain status"
 
@@ -276,16 +263,14 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee /lib/systemd/system$DAEMON_HOME_4.service
-
-#sudo mv $DAEMON_HOME_4.service /lib/systemd/system$DAEMON_HOME_4.service
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-4.service"
 
 echo "-------Start $DAEMON_HOME_4 service-------"
 
 sudo -S systemctl daemon-reload
-sudo -S systemctl start $DAEMON_HOME_4
+sudo -S systemctl start $DAEMON-4.service
 
-sleep 10s
+sleep 5s
 
 echo "Checking $DAEMON_HOME_4 chain status"
 
