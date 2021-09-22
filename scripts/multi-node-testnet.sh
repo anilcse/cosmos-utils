@@ -158,9 +158,9 @@ $DAEMON collect-gentxs --home $DAEMON_HOME_1
 
 echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
 
-sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
-sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
-sudo cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
 
 
 echo "---------Creating $DAEMON_HOME_1 system file---------"
