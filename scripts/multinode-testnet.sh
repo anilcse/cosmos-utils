@@ -91,7 +91,7 @@ $DAEMON init --chain-id $CHAINID $DAEMON_HOME_4 --home $DAEMON_HOME_4
 echo "----------Update node-id of $DAEMON_HOME_1 in remaining nodes---------"
 nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME_1)
 echo $nodeID
-PERSISTENT_PEERS="$nodeID@27.0.0.1:16656"
+PERSISTENT_PEERS="$nodeID@127.0.0.1:16656"
 echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
 
 echo "----------Updating $DAEMON_HOME_1 chain config-----------"
@@ -142,6 +142,9 @@ $DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
 echo "----------Genesis creation---------"
 
 $DAEMON --home $DAEMON_HOME_1 add-genesis-account validator1 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_2 add-genesis-account validator2 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_3 add-genesis-account validator3 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_4 add-genesis-account validator4 1000000000000$DENOM  --keyring-backend test
 $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator2 -a --home $DAEMON_HOME_2 --keyring-backend test) 1000000000000$DENOM
 $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator3 -a --home $DAEMON_HOME_3 --keyring-backend test) 1000000000000$DENOM
 $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator4 -a --home $DAEMON_HOME_4 --keyring-backend test) 1000000000000$DENOM
