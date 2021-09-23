@@ -176,7 +176,7 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-1.service"
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system/$DAEMON-1.service"
 
 echo "-------Start $DAEMON-1 service-------"
 
@@ -205,7 +205,7 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-2.service"
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system/$DAEMON-2.service"
 
 echo "-------Start $DAEMON_HOME_2 service-------"
 
@@ -234,7 +234,7 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-3.service"
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system/$DAEMON-3.service"
 
 echo "-------Start $DAEMON_HOME_3 service-------"
 
@@ -263,7 +263,7 @@ Restart=on-failure
 RestartSec=3
 LimitNOFILE=4096
 [Install]
-WantedBy=multi-user.target" | sudo tee "/lib/systemd/system$DAEMON-4.service"
+WantedBy=multi-user.target" | sudo tee "/lib/systemd/system/$DAEMON-4.service"
 
 echo "-------Start $DAEMON_HOME_4 service-------"
 
