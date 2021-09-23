@@ -97,7 +97,7 @@ echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
 echo "----------Updating $DAEMON_HOME_1 chain config-----------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME_1/config/config.toml
-sed -i 's#tcp://0.0.0.1:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
+sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
 #sed -i '/timeout_commit =/c\timeout_commit = "5s"' $DAEMON_HOME_1/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME_1/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME_1/config/app.toml
@@ -108,7 +108,7 @@ sed -i "s/stake/$DENOM/g" $DAEMON_HOME_1/config/genesis.json
 echo "----------Updating $DAEMON_HOME_2 chain config-----------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' $DAEMON_HOME_2/config/config.toml
-sed -i 's#tcp://0.0.0.1:26656#tcp://0.0.0.0:26656#g' $DAEMON_HOME_2/config/config.toml
+sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:26656#g' $DAEMON_HOME_2/config/config.toml
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME_2/config/config.toml
 #sed -i '/timeout_commit =/c\timeout_commit = "5s"' $DAEMON_HOME_2/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:2090#g' $DAEMON_HOME_2/config/app.toml
@@ -117,7 +117,7 @@ sed -i 's#0.0.0.0:9091#0.0.0.0:2091#g' $DAEMON_HOME_2/config/app.toml
 echo "----------Updating $DAEMON_HOME_3 chain config------------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:36657#g' $DAEMON_HOME_3/config/config.toml
-sed -i 's#tcp://0.0.0.1:26656#tcp://0.0.0.0:36656#g' $DAEMON_HOME_3/config/config.toml
+sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:36656#g' $DAEMON_HOME_3/config/config.toml
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME_3/config/config.toml
 #sed -i '/timeout_commit =/c\timeout_commit = "5s"' $DAEMON_HOME_3/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:3090#g' $DAEMON_HOME_3/config/app.toml
