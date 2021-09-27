@@ -88,6 +88,46 @@ $DAEMON init --chain-id $CHAINID $DAEMON_HOME_2 --home $DAEMON_HOME_2
 $DAEMON init --chain-id $CHAINID $DAEMON_HOME_3 --home $DAEMON_HOME_3
 $DAEMON init --chain-id $CHAINID $DAEMON_HOME_4 --home $DAEMON_HOME_4
 
+echo "---------Creating four keys-------------"
+
+$DAEMON keys add validator1 --keyring-backend test --home $DAEMON_HOME_1
+$DAEMON keys add validator2 --keyring-backend test --home $DAEMON_HOME_2
+$DAEMON keys add validator3 --keyring-backend test --home $DAEMON_HOME_3
+$DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
+
+echo "----------Genesis creation---------"
+
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account validator1 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_2 add-genesis-account validator2 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_3 add-genesis-account validator3 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_4 add-genesis-account validator4 1000000000000$DENOM  --keyring-backend test
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator2 -a --home $DAEMON_HOME_2 --keyring-backend test) 1000000000000$DENOM
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator3 -a --home $DAEMON_HOME_3 --keyring-backend test) 1000000000000$DENOM
+$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator4 -a --home $DAEMON_HOME_4 --keyring-backend test) 1000000000000$DENOM
+
+echo "--------Gentx--------"
+
+$DAEMON gentx validator1 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_1
+$DAEMON gentx validator2 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_2
+$DAEMON gentx validator3 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_3
+$DAEMON gentx validator4 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_4
+
+echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
+
+cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+
+echo "----------collect-gentxs------------"
+
+$DAEMON collect-gentxs --home $DAEMON_HOME_1
+
+echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
+
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
+cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
+
 echo "----------Update node-id of $DAEMON_HOME_1 in remaining nodes---------"
 nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME_1)
 echo $nodeID
@@ -131,46 +171,6 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMO
 #sed -i '/timeout_commit =/c\timeout_commit = "5s"' $DAEMON_HOME_4/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:4090#g' $DAEMON_HOME_4/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:4091#g' $DAEMON_HOME_4/config/app.toml
-
-echo "---------Create four keys-------------"
-
-$DAEMON keys add validator1 --keyring-backend test --home $DAEMON_HOME_1
-$DAEMON keys add validator2 --keyring-backend test --home $DAEMON_HOME_2
-$DAEMON keys add validator3 --keyring-backend test --home $DAEMON_HOME_3
-$DAEMON keys add validator4 --keyring-backend test --home $DAEMON_HOME_4
-
-echo "----------Genesis creation---------"
-
-$DAEMON --home $DAEMON_HOME_1 add-genesis-account validator1 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_2 add-genesis-account validator2 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_3 add-genesis-account validator3 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_4 add-genesis-account validator4 1000000000000$DENOM  --keyring-backend test
-$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator2 -a --home $DAEMON_HOME_2 --keyring-backend test) 1000000000000$DENOM
-$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator3 -a --home $DAEMON_HOME_3 --keyring-backend test) 1000000000000$DENOM
-$DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator4 -a --home $DAEMON_HOME_4 --keyring-backend test) 1000000000000$DENOM
-
-echo "--------Gentx--------"
-
-$DAEMON gentx validator1 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_1
-$DAEMON gentx validator2 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_2
-$DAEMON gentx validator3 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_3
-$DAEMON gentx validator4 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_4
-
-echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
-
-cp $DAEMON_HOME_2/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
-cp $DAEMON_HOME_3/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
-cp $DAEMON_HOME_4/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
-
-echo "----------collect-gentxs------------"
-
-$DAEMON collect-gentxs --home $DAEMON_HOME_1
-
-echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
-
-cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
-cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_3/config/
-cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_4/config/
 
 
 echo "---------Creating $DAEMON_HOME_1 system file---------"
