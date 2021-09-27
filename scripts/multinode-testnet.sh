@@ -122,6 +122,12 @@ echo "----------collect-gentxs------------"
 
 $DAEMON collect-gentxs --home $DAEMON_HOME_1
 
+echo "---------Updating $DAEMON_HOME_1 genesis.json ------------"
+
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_1/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME_1/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME_1/config/genesis.json
+
 echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
 
 cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_2/config/
@@ -138,12 +144,10 @@ echo "----------Updating $DAEMON_HOME_1 chain config-----------"
 
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME_1/config/config.toml
 sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
+sed -i '/persistent_peers =/c\persistent_peers = "'""'"' ~/.$DAEMON/config/config.toml
 #sed -i '/timeout_commit =/c\timeout_commit = "5s"' $DAEMON_HOME_1/config/config.toml
 sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME_1/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME_1/config/app.toml
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_1/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME_1/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME_1/config/genesis.json
 
 echo "----------Updating $DAEMON_HOME_2 chain config-----------"
 
@@ -197,7 +201,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_1 chain status"
 
-$DAEMON status --home $DAEMON_HOME_1
+$DAEMON status --node tcp://localhost:16657
 
 echo
 echo
@@ -226,7 +230,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_2 chain status"
 
-$DAEMON status --home $DAEMON_HOME_2
+$DAEMON status --node tcp://localhost:26657
 
 echo
 echo
@@ -255,7 +259,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_3 chain status"
 
-$DAEMON status --home $DAEMON_HOME_3
+$DAEMON status ---node tcp://localhost:36657
 
 echo
 echo
@@ -284,6 +288,6 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_4 chain status"
 
-$DAEMON status --home $DAEMON_HOME_4
+$DAEMON status --node tcp://localhost:46657
 
 echo
