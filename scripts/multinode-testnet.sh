@@ -259,7 +259,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_3 chain status"
 
-$DAEMON status ---node tcp://localhost:36657
+$DAEMON status --node tcp://localhost:36657
 
 echo
 echo
