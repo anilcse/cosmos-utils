@@ -197,7 +197,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_1 chain status"
 
-$CLI status --home $DAEMON_HOME_1
+$DAEMON status --home $DAEMON_HOME_1
 
 echo
 echo
@@ -226,7 +226,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_2 chain status"
 
-$CLI status --home $DAEMON_HOME_2
+$DAEMON status --home $DAEMON_HOME_2
 
 echo
 echo
@@ -255,7 +255,7 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_3 chain status"
 
-$CLI status --home $DAEMON_HOME_3
+$DAEMON status --home $DAEMON_HOME_3
 
 echo
 echo
@@ -284,6 +284,6 @@ sleep 5s
 
 echo "Checking $DAEMON_HOME_4 chain status"
 
-$CLI status --home $DAEMON_HOME_4
+$DAEMON status --home $DAEMON_HOME_4
 
 echo
