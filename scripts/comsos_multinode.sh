@@ -16,7 +16,7 @@ then
     NODES=2
 fi
 
-echo "Number of nodes to be setup: $NODES"
+echo "**** Number of nodes to be setup: $NODES ****"
 
 command_exists () {
     type "$1" &> /dev/null ;
@@ -119,7 +119,7 @@ do
     $DAEMON gentx validator$a 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_$a
 done
 
-echo "---------Copy all the genesis to $DAEMON_HOME_1----------"
+echo "---------Copy all node genesis to $DAEMON_HOME_1----------"
 
 for (( a=2; a<=$NODES; a++ ))
 do
