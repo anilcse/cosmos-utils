@@ -103,7 +103,7 @@ echo "----------Genesis creation---------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    if [ $a ==1 ]
+    if [ $a == 1 ]
     then
         $DAEMON --home $DAEMON_HOME_$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
         continue
@@ -151,7 +151,7 @@ echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
 
 for (( a=2; a<=$NODES; a++ ))
 do
-    if [ $a ==1 ]
+    if [ $a == 1 ]
     then
         echo "----------Updating $DAEMON_HOME_1 chain config-----------"
 
