@@ -73,7 +73,11 @@ do
     export DAEMON_HOME_$a=$DAEMON_HOME-$a
     echo "DAEMON_HOME_$a=$DAEMON_HOME-$a"
 
-    $DAEMON unsafe-reset-all  --home $DAEMON_HOME_$a
+    echo "PATHHHH : $DAEMON_HOME_"
+    echo "Deamon path :: $DAEMON_HOME-$a"
+
+    $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a
+    echo "****** here command $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a ******"
 done
 
 rm -rf ~/.$DAEMON/config/gen*
@@ -82,21 +86,24 @@ echo "-----Create daemon home directories if not exist------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    mkdir -p "$DAEMON_HOME_$a"
+    echo "****** create dir :: $DAEMON_HOME-$a ********"
+    mkdir -p "$DAEMON_HOME-$a"
 done
 
 echo "--------Start initializing the chain ($CHAINID)---------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    $DAEMON init --chain-id $CHAINID $DAEMON_HOME_${a} --home $DAEMON_HOME_${a}
+    echo "-------Init chain ${a}--------"
+    echo "Deamon home :: $DAEMON_HOME-${a}"
+    $DAEMON init --chain-id $CHAINID $DAEMON_HOME-${a} --home $DAEMON_HOME-${a}
 done
 
 echo "---------Creating $NODES keys-------------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    $DAEMON keys add "validator${a}" --keyring-backend test --home $DAEMON_HOME_${a}
+    $DAEMON keys add "validator${a}" --keyring-backend test --home $DAEMON_HOME-${a}
 done
 
 echo "----------Genesis creation---------"
@@ -105,25 +112,25 @@ for (( a=1; a<=$NODES; a++ ))
 do
     if [ $a == 1 ]
     then
-        $DAEMON --home $DAEMON_HOME_$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
+        $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
         continue
     fi
-    $DAEMON --home $DAEMON_HOME_$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
-    $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME_$a --keyring-backend test) 1000000000000$DENOM
+    $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
+    $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME-$a --keyring-backend test) 1000000000000$DENOM
 done
 
 echo "--------Gentx--------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    $DAEMON gentx validator$a 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME_$a
+    $DAEMON gentx validator$a 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME-$a
 done
 
 echo "---------Copy all node genesis to $DAEMON_HOME_1----------"
 
 for (( a=2; a<=$NODES; a++ ))
 do
-    cp $DAEMON_HOME_$a/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+    cp $DAEMON_HOME-$a/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
 done
 
 echo "----------collect-gentxs------------"
@@ -140,7 +147,7 @@ echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-----
 
 for (( a=2; a<=$NODES; a++ ))
 do
-    cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME_$a/config/
+    cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME-$a/config/
 done
 
 echo "----------Update node-id of $DAEMON_HOME_1 in remaining nodes---------"
@@ -157,32 +164,32 @@ do
 
         sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME_1/config/config.toml
         sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
-        sed -i '/persistent_peers =/c\persistent_peers = "'""'"' ~/.$DAEMON/config/config.toml
+        sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON/config/config.toml
         sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME_1/config/app.toml
         sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME_1/config/app.toml
 
-        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' ~/.$DAEMON_HOME_1/config/config.toml
-        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' ~/.$DAEMON_HOME_1/config/config.toml
+        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_1/config/config.toml
+        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_1/config/config.toml
         continue
     fi
 
-        echo "----------Updating $DAEMON_HOME_$a chain config-----------"
+        echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'"${a}6657"'#g' $DAEMON_HOME_$a/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'"${a}6656"'#g' $DAEMON_HOME_$a/config/config.toml
-        sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME_$a/config/config.toml
+        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'"${a}6657"'#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'"${a}6656"'#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME-$a/config/config.toml
        
-        sed -i 's#0.0.0.0:9090#0.0.0.0:'"${a}090"'#g' $DAEMON_HOME_$a/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:'"${a}091"'#g' $DAEMON_HOME_$a/config/app.toml
+        sed -i 's#0.0.0.0:9090#0.0.0.0:'"${a}090"'#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9091#0.0.0.0:'"${a}091"'#g' $DAEMON_HOME-$a/config/app.toml
 
-        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' ~/.$DAEMON_HOME_$a/config/config.toml
-        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' ~/.$DAEMON_HOME_$a/config/config.toml
+        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
 
 done
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    echo "---------Creating $DAEMON_HOME_$a system file---------"
+    echo "---------Creating $DAEMON_HOME-$a system file---------"
 
     echo "[Unit]
     Description=${DAEMON} daemon
@@ -190,7 +197,7 @@ do
     [Service]
     Type=simple
     User=$USER
-    ExecStart=$(which $DAEMON) start --home $DAEMON_HOME_$a
+    ExecStart=$(which $DAEMON) start --home $DAEMON_HOME-$a
     Restart=on-failure
     RestartSec=3
     LimitNOFILE=4096
@@ -204,7 +211,7 @@ do
 
     sleep 5s
 
-    echo "Checking $DAEMON_HOME_${a} chain status"
+    echo "Checking $DAEMON_HOME-${a} chain status"
 
     $DAEMON status --node tcp://localhost:${a}6657
 
