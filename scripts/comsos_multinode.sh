@@ -18,6 +18,22 @@ fi
 
 echo "**** Number of nodes to be setup: $NODES ****"
 
+for ((a=1; a<=$NODES; a++))
+do
+     DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    RPC=`expr 16657 + $INC` #increment rpc ports
+
+    LADDR=`expr 16656 + $INC` #laddr ports
+    GRPC=`expr 9090 + $INC` # grpc poprt
+    WGRPC=`expr 9091 + $INC` # web grpc port
+   
+
+    echo "DIFF : $DIFF , INC : $INC , RPC : $RPC , LADDR : $LADDR , GRPC : $GRPC , WGRPC : $WGRPC"
+done
+
+#exit 1
+
 command_exists () {
     type "$1" &> /dev/null ;
 }
@@ -164,18 +180,27 @@ echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
 
 for (( a=1; a<=$NODES; a++ ))
 do
+
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+
+    RPC=`expr 16657 + $INC` #increment rpc ports
+    LADDR=`expr 16656 + $INC` #laddr ports
+    GRPC=`expr 9090 + $INC` # grpc poprt
+    WGRPC=`expr 9091 + $INC` # web grpc port
+
     if [ $a == 1 ]
     then
         echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'${RPC}'#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'${LADDR}'#g' $DAEMON_HOME-$a/config/config.toml
         sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON_HOME-$a/config/config.toml
         sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
         sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
 
-        sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME-$a/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9090#0.0.0.0:'${GRPC}'#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9091#0.0.0.0:'${WGRPC}'#g' $DAEMON_HOME-$a/config/app.toml
 
         sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
         sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
@@ -184,14 +209,14 @@ do
 
         echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'"${a}6657"'#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'"${a}6656"'#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'${RPC}'#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'${LADDR}'#g' $DAEMON_HOME-$a/config/config.toml
         sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME-$a/config/config.toml
         sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
         sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
 
-        sed -i 's#0.0.0.0:9090#0.0.0.0:'"${a}090"'#g' $DAEMON_HOME-$a/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:'"${a}091"'#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9090#0.0.0.0:'${GRPC}'#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9091#0.0.0.0:'${WGRPC}'#g' $DAEMON_HOME-$a/config/app.toml
 
         sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
         sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
@@ -200,6 +225,11 @@ done
 
 for (( a=1; a<=$NODES; a++ ))
 do
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+
+    RPC=`expr 16657 + $INC` #increment rpc ports
+
     echo "---------Creating $DAEMON_HOME-$a system file---------"
 
     echo "[Unit]
@@ -224,7 +254,7 @@ do
 
     echo "Checking $DAEMON_HOME-${a} chain status"
 
-    $DAEMON status --node tcp://localhost:${a}6657
+    $DAEMON status --node tcp://localhost:${RPC}
 
     echo
 done
