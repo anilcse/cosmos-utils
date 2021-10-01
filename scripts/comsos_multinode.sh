@@ -156,12 +156,29 @@ echo "---------Getting public IP address-----------"
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"
 
-echo "----------Update node-id of $DAEMON_HOME-1 in remaining nodes---------"
-nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME-1)
-echo "** Node ID :: $nodeID **"
-PERSISTENT_PEERS="$nodeID@$IP:16656"
-echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
+for (( a=1; a<=$NODES; a++ ))
+do
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    LADDR=`expr 16656 + $INC` #laddr ports
 
+    echo "----------Get node-id of $DAEMON_HOME-$a ---------"
+    nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME-$a)
+    echo "** Node ID :: $nodeID **"
+    PR="$nodeID@$IP:$LADDR"
+    if [ $a == 1 ]
+    then
+        PERSISTENT_PEERS="${PR}"
+        continue
+    fi
+
+    PERSISTENT_PEERS="${PERSISTENT_PEERS},${PR}"
+    #echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
+done
+
+echo '*** PERSISTENT_PEERS : "'"${PERSISTENT_PEERS}"'" *****'
+
+#update configurations
 for (( a=1; a<=$NODES; a++ ))
 do
 
@@ -173,40 +190,23 @@ do
     GRPC=`expr 9090 + $INC` # grpc poprt
     WGRPC=`expr 9091 + $INC` # web grpc port
 
-    if [ $a == 1 ]
-    then
-        echo "----------Updating $DAEMON_HOME-$a chain config-----------"
+    echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'${RPC}'#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'${LADDR}'#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
+    sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'${RPC}'#g' $DAEMON_HOME-$a/config/config.toml
+    sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'${LADDR}'#g' $DAEMON_HOME-$a/config/config.toml
+    sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME-$a/config/config.toml
+    sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
+    sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
 
-        sed -i 's#0.0.0.0:9090#0.0.0.0:'${GRPC}'#g' $DAEMON_HOME-$a/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:'${WGRPC}'#g' $DAEMON_HOME-$a/config/app.toml
+    sed -i 's#0.0.0.0:9090#0.0.0.0:'${GRPC}'#g' $DAEMON_HOME-$a/config/app.toml
+    sed -i 's#0.0.0.0:9091#0.0.0.0:'${WGRPC}'#g' $DAEMON_HOME-$a/config/app.toml
 
-        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
-        continue
-    fi
-
-        echo "----------Updating $DAEMON_HOME-$a chain config-----------"
-
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'${RPC}'#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'${LADDR}'#g' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
-
-        sed -i 's#0.0.0.0:9090#0.0.0.0:'${GRPC}'#g' $DAEMON_HOME-$a/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:'${WGRPC}'#g' $DAEMON_HOME-$a/config/app.toml
-
-        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
-        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
+    sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
+    sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
 
 done
 
+#create system services
 for (( a=1; a<=$NODES; a++ ))
 do
     DIFF=`expr $a - 1`
