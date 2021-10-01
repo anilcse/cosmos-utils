@@ -18,22 +18,6 @@ fi
 
 echo "**** Number of nodes to be setup: $NODES ****"
 
-for ((a=1; a<=$NODES; a++))
-do
-     DIFF=`expr $a - 1`
-    INC=`expr $DIFF \* 2`
-    RPC=`expr 16657 + $INC` #increment rpc ports
-
-    LADDR=`expr 16656 + $INC` #laddr ports
-    GRPC=`expr 9090 + $INC` # grpc poprt
-    WGRPC=`expr 9091 + $INC` # web grpc port
-   
-
-    echo "DIFF : $DIFF , INC : $INC , RPC : $RPC , LADDR : $LADDR , GRPC : $GRPC , WGRPC : $WGRPC"
-done
-
-#exit 1
-
 command_exists () {
     type "$1" &> /dev/null ;
 }
