@@ -3,7 +3,7 @@
 NODES=$1
 if [ -z $NODES ]
 then
-    NODES=2
+    NODES=1
 fi
 
 echo "**** Number of nodes to be shutdown: $NODES ****"
