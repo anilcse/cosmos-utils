@@ -154,6 +154,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON_HOME_1/config/c
 sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_1/config/config.toml
 sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_1/config/config.toml
 sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME_1/config/config.toml
+sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME_1/config/config.toml
 
 sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME_1/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME_1/config/app.toml
@@ -166,6 +167,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMO
 sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_2/config/config.toml
 sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_2/config/config.toml
 sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME_2/config/config.toml
+sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME_2/config/config.toml
 
 sed -i 's#0.0.0.0:9090#0.0.0.0:2090#g' $DAEMON_HOME_2/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:2091#g' $DAEMON_HOME_2/config/app.toml
@@ -178,6 +180,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMO
 sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_3/config/config.toml
 sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_3/config/config.toml
 sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME_3/config/config.toml
+sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME_3/config/config.toml
 
 sed -i 's#0.0.0.0:9090#0.0.0.0:3090#g' $DAEMON_HOME_3/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:3091#g' $DAEMON_HOME_3/config/app.toml
@@ -190,6 +193,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMO
 sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_4/config/config.toml
 sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_4/config/config.toml
 sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME_4/config/config.toml
+sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME_4/config/config.toml
 
 sed -i 's#0.0.0.0:9090#0.0.0.0:4090#g' $DAEMON_HOME_4/config/app.toml
 sed -i 's#0.0.0.0:9091#0.0.0.0:4091#g' $DAEMON_HOME_4/config/app.toml

@@ -113,10 +113,11 @@ do
     if [ $a == 1 ]
     then
         $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
+        echo "done $DAEMON_HOME-$a genesis creation "
         continue
     fi
     $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
-    $DAEMON --home $DAEMON_HOME_1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME-$a --keyring-backend test) 1000000000000$DENOM
+    $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME-$a --keyring-backend test) 1000000000000$DENOM
 done
 
 echo "--------Gentx--------"
@@ -126,50 +127,58 @@ do
     $DAEMON gentx validator$a 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME-$a
 done
 
-echo "---------Copy all node genesis to $DAEMON_HOME_1----------"
+echo "---------Copy all node genesis to $DAEMON_HOME-1----------"
 
 for (( a=2; a<=$NODES; a++ ))
 do
-    cp $DAEMON_HOME-$a/config/gentx/*.json $DAEMON_HOME_1/config/gentx/
+    cp $DAEMON_HOME-$a/config/gentx/*.json $DAEMON_HOME-1/config/gentx/
 done
 
 echo "----------collect-gentxs------------"
 
-$DAEMON collect-gentxs --home $DAEMON_HOME_1
+$DAEMON collect-gentxs --home $DAEMON_HOME-1
 
-echo "---------Updating $DAEMON_HOME_1 genesis.json ------------"
+echo "---------Updating $DAEMON_HOME-1 genesis.json ------------"
 
-sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME_1/config/genesis.json
-sed -i "s/172800s/600s/g" $DAEMON_HOME_1/config/genesis.json
-sed -i "s/stake/$DENOM/g" $DAEMON_HOME_1/config/genesis.json
+sed -i "s/172800000000000/600000000000/g" $DAEMON_HOME-1/config/genesis.json
+sed -i "s/172800s/600s/g" $DAEMON_HOME-1/config/genesis.json
+sed -i "s/stake/$DENOM/g" $DAEMON_HOME-1/config/genesis.json
 
-echo "---------Distribute genesis.json of $DAEMON_HOME_1 to remaining nodes-------"
+echo "---------Distribute genesis.json of $DAEMON_HOME-1 to remaining nodes-------"
 
 for (( a=2; a<=$NODES; a++ ))
 do
-    cp $DAEMON_HOME_1/config/genesis.json $DAEMON_HOME-$a/config/
+    cp $DAEMON_HOME-1/config/genesis.json $DAEMON_HOME-$a/config/
 done
 
-echo "----------Update node-id of $DAEMON_HOME_1 in remaining nodes---------"
-nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME_1)
-echo $nodeID
+echo "---------Getting public IP address-----------"
+
+IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+echo "Public IP address: ${IP}"
+
+echo "----------Update node-id of $DAEMON_HOME-1 in remaining nodes---------"
+nodeID=$("${DAEMON}" tendermint show-node-id --home $DAEMON_HOME-1)
+echo "** Node ID :: $nodeID **"
 PERSISTENT_PEERS="$nodeID@$IP:16656"
 echo "PERSISTENT_PEERS : $PERSISTENT_PEERS"
 
-for (( a=2; a<=$NODES; a++ ))
+for (( a=1; a<=$NODES; a++ ))
 do
     if [ $a == 1 ]
     then
-        echo "----------Updating $DAEMON_HOME_1 chain config-----------"
+        echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
-        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME_1/config/config.toml
-        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME_1/config/config.toml
-        sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON/config/config.toml
-        sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME_1/config/app.toml
-        sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME_1/config/app.toml
+        sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:16657#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:16656#g' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/persistent_peers =/c\persistent_peers = "'""'"' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
 
-        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME_1/config/config.toml
-        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME_1/config/config.toml
+        sed -i 's#0.0.0.0:9090#0.0.0.0:1090#g' $DAEMON_HOME-$a/config/app.toml
+        sed -i 's#0.0.0.0:9091#0.0.0.0:1091#g' $DAEMON_HOME-$a/config/app.toml
+
+        sed -i '/max_num_inbound_peers =/c\max_num_inbound_peers = 140' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/max_num_outbound_peers =/c\max_num_outbound_peers = 110' $DAEMON_HOME-$a/config/config.toml
         continue
     fi
 
@@ -178,7 +187,9 @@ do
         sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:'"${a}6657"'#g' $DAEMON_HOME-$a/config/config.toml
         sed -i 's#tcp://0.0.0.0:26656#tcp://0.0.0.0:'"${a}6656"'#g' $DAEMON_HOME-$a/config/config.toml
         sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' $DAEMON_HOME-$a/config/config.toml
-       
+        sed -i '/allow_duplicate_ip =/c\allow_duplicate_ip = true' $DAEMON_HOME-$a/config/config.toml
+        sed -i '/pprof_laddr =/c\# pprof_laddr = "localhost:6060"' $DAEMON_HOME-$a/config/config.toml
+
         sed -i 's#0.0.0.0:9090#0.0.0.0:'"${a}090"'#g' $DAEMON_HOME-$a/config/app.toml
         sed -i 's#0.0.0.0:9091#0.0.0.0:'"${a}091"'#g' $DAEMON_HOME-$a/config/app.toml
 
