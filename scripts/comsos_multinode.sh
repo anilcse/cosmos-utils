@@ -10,11 +10,17 @@ then
     display_usage
 fi
 
+# read no.of nodes to be setup
 NODES=$1
 if [ -z $NODES ]
 then
     NODES=2
 fi
+
+# read no of accounts to be setup
+ACCOUNTS=$2
+
+echo " ** Number of nodes : $NODES and accounts : $ACCOUNTS has been passed **"
 
 echo "**** Number of nodes to be setup: $NODES ****"
 
@@ -71,9 +77,6 @@ $DAEMON version --long
 for (( a=1; a<=$NODES; a++ ))
 do
     export DAEMON_HOME_$a=$DAEMON_HOME-$a
-    echo "DAEMON_HOME_$a=$DAEMON_HOME-$a"
-
-    echo "PATHHHH : $DAEMON_HOME_"
     echo "Deamon path :: $DAEMON_HOME-$a"
 
     $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a
@@ -99,12 +102,26 @@ do
     $DAEMON init --chain-id $CHAINID $DAEMON_HOME-${a} --home $DAEMON_HOME-${a}
 done
 
+# add validators
 echo "---------Creating $NODES keys-------------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
     $DAEMON keys add "validator${a}" --keyring-backend test --home $DAEMON_HOME-${a}
 done
+
+# add accounts if any arguments passed
+if [ -z $ACCOUNTS ] || [ "$ACCOUNTS" -eq 0 ]
+then
+    echo "----- Accounts argument didn't pass, so not creating any accounts --------"
+else
+    echo "---------Creating $ACCOUNTS accounts-------------"
+
+    for (( a=1; a<=$ACCOUNTS; a++ ))
+    do
+        $DAEMON keys add "account${a}" --keyring-backend test --home $DAEMON_HOME-1
+    done
+fi
 
 echo "----------Genesis creation---------"
 
