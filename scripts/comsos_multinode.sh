@@ -135,10 +135,16 @@ do
     fi
     $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
     $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME-$a --keyring-backend test) 1000000000000$DENOM
-
-    # add accounts
-    $DAEMON --home $DAEMON_HOME-$a add-genesis-account account$a 1000000000000$DENOM  --keyring-backend test
 done
+
+echo "----------Genesis creation for accounts---------"
+for (( a=1; a<=$ACCOUNTS; a++ ))
+do
+     # add accounts
+    echo "cmd :: $DAEMON --home $DAEMON_HOME-$a add-genesis-account "account${a}" 1000000000000$DENOM  --keyring-backend test"
+    
+    $DAEMON --home $DAEMON_HOME-$a add-genesis-account "account${a}" 1000000000000$DENOM  --keyring-backend test
+fi
 
 echo "--------Gentx--------"
 
@@ -209,6 +215,8 @@ do
     LADDR=`expr 16656 + $INC` #laddr ports
     GRPC=`expr 9090 + $INC` # grpc poprt
     WGRPC=`expr 9091 + $INC` # web grpc port
+
+    echo "PORTS OF RPC :: $RPC , LADDR :: $LADDR , GRPC :: $GRPC , WGRPC :: $WGRPC"
 
     echo "----------Updating $DAEMON_HOME-$a chain config-----------"
 
