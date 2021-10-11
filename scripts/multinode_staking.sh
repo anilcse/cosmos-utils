@@ -1,11 +1,11 @@
 #/bin/sh
 
 display_usage() {
-    printf "** Please check the exported values:: **\n Deamon : $DEAMON\n Denom : $DENOM\n ChainID : $CHAINID\n Node : $NODE\n"
+    printf "** Please check the exported values:: **\n Deamon : $DEAMON\n Denom : $DENOM\n ChainID : $CHAINID\n Daemon home : $DAEMON_HOME\n"
     exit 1
 }
 
-if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $NODE ]
+if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $DAEMON_HOME ]
 then 
     display_usage
 fi
