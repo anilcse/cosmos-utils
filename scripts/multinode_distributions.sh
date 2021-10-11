@@ -17,7 +17,7 @@ NODES=$1
 NODES=$1
 if [ -z $NODES ]
 then
-    NODES=2
+    NODES=5
 fi
 
 echo "** Number of nodes mentioned : $NODES **"
