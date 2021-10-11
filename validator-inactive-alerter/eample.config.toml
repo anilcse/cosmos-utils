@@ -1,0 +1,12 @@
+rpc_endpoint = "localhost:26657"
+cons_addr_prefix = "akashvalcons"
+hex_address = "82931915D1283238A37B586177623B74FF0A4"
+network_name = "akash"
+moniker = "val"
+
+enable_alerts = "yes"
+
+# Configure telegarm bot details to  get alerts
+[telegram]
+tg_chat_id = 21288205
+tg_bot_token = "1533624405:AAG121332yHww-sT4X-5I_q29rKK8yvWR_T4"
