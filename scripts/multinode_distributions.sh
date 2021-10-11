@@ -35,7 +35,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards of $FROMKEY-----------"
 
-    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test -y)
     wrCode=$(echo "${wrTx}"| jq -r '.code')
     wrtxHash=$(echo "${wrTx}" | jq '.txhash')
     echo "Code is : $wrCode"
@@ -62,7 +62,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards commission of $FROMKEY-----------"
 
-    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node "${NODE}" -y)
+    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test -y)
     #echo $wrTx
     wrcCode=$(echo "${wrcTx}"| jq -r '.code')
     wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
@@ -91,7 +91,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "------ withdraw-all-rewards of $FROMKEY --------"
 
-    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --node $NODE -y)
+    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test -y)
     warcode=$(echo "${wartx}"| jq -r '.code')
     wartxHash=$(echo "${wartx}" | jq -r '.txhash')
     echo "Code is : $warcode"
