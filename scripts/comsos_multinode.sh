@@ -271,7 +271,7 @@ do
     sudo -S systemctl daemon-reload
     sudo -S systemctl start $DAEMON-${a}.service
 
-    sleep 5s
+    sleep 1s
 
     echo "Checking $DAEMON_HOME-${a} chain status"
 
