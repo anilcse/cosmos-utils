@@ -141,10 +141,10 @@ echo "----------Genesis creation for accounts---------"
 for (( a=1; a<=$ACCOUNTS; a++ ))
 do
      # add accounts
-    echo "cmd :: $DAEMON --home $DAEMON_HOME-$a add-genesis-account "account${a}" 1000000000000$DENOM  --keyring-backend test"
-    
-    $DAEMON --home $DAEMON_HOME-$a add-genesis-account "account${a}" 1000000000000$DENOM  --keyring-backend test
-fi
+    echo "cmd ::$DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM"
+
+    $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM
+done
 
 echo "--------Gentx--------"
 
