@@ -72,32 +72,12 @@ echo "-----------Redelegation txs-------------"
 
 for (( a=$NODES; a>=1; a-- ))
 do
-    DIFF=`expr $a - 1`
-    INC=`expr $DIFF \* 2`
-    PORT=`expr 16657 + $INC` #get ports
-    RPC="http://${IP}:${PORT}"
-    echo "NODE :: $RPC"
-
-    TONODE=`expr $a - 1`
-    echo "To node number : $TONODE"
-
-    fromValidator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
-    FROMADDRESS=$(echo "${fromValidator}" | jq -r '.address')
-
-    toValidator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${TONODE} --output json)
-    TOADDRESS=$(echo "${toValidator}" | jq -r '.address')
-
-    FROM=$FROMADDRESS
-    TO=$TOADDRESS
-    FROMKEY="validator${a}"
-    TOKEY="validator${TONODE}"
-    echo "** validator address :: $VALADDRESS and from key :: $FROMKEY **"
 
     if [ $a == 1 ]
     then
         # this tx has to fail bcz, the tx between these nodes already happened
         N=$NODES
-        P=`expr $NODES -1`
+        P=`expr $NODES - 1`
         fromValidator=$("${DAEMON}" keys show "validator${N}" --bech val --keyring-backend test --home $DAEMON_HOME-${N} --output json)
         FROMADDRESS=$(echo "${fromValidator}" | jq -r '.address')
 
@@ -108,13 +88,34 @@ do
         TO=$TOADDRESS
         FROMKEY="validator${N}"
         TOKEY="validator${P}"
+    else 
+        DIFF=`expr $a - 1`
+        INC=`expr $DIFF \* 2`
+        PORT=`expr 16657 + $INC` #get ports
+        RPC="http://${IP}:${PORT}"
+        echo "NODE :: $RPC"
+
+        TONODE=`expr $a - 1`
+        echo "To node number : $TONODE"
+
+        fromValidator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+        FROMADDRESS=$(echo "${fromValidator}" | jq -r '.address')
+
+        toValidator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${TONODE} --output json)
+        TOADDRESS=$(echo "${toValidator}" | jq -r '.address')
+
+        FROM=$FROMADDRESS
+        TO=$TOADDRESS
+        FROMKEY="validator${a}"
+        TOKEY="validator${TONODE}"
+        echo "** validator address :: $VALADDRESS and from key :: $FROMKEY **"
     fi
 
     # Print the value
-    echo "Iteration no $a and values of from : $FROM to : $TO"
+    echo "Iteration no $a and values of from : $FROMKEY to : $TOKEY"
     echo "--------- Redelegation from $FROM to $TO-----------"
 
-    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     rdTxCode=$(echo "${rdTx}"| jq -r '.code')
     rdtxHash=$(echo "${rdTx}" | jq '.txhash')
     echo "Code is : $rdTxCode"
