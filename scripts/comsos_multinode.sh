@@ -20,7 +20,7 @@ fi
 # read no of accounts to be setup
 ACCOUNTS=$2
 
-echo " ** Number of nodes : $NODES and accounts : $ACCOUNTS has been passed **"
+echo " ** Number of nodes : $NODES and accounts : $ACCOUNTS to be setup **"
 
 echo "**** Number of nodes to be setup: $NODES ****"
 
@@ -83,9 +83,13 @@ do
     echo "****** here command $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a ******"
 done
 
-rm -rf ~/.$DAEMON/config/gen*
+# remove daemon home directories if already exists
+for (( a=1; a<=$NODES; a++ ))
+do
+    rm -rf ~/.$DAEMON_HOME-$a/config/gen*
+done
 
-echo "-----Create daemon home directories if not exist------"
+echo "-----Create daemon home directories------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
@@ -110,10 +114,10 @@ do
     $DAEMON keys add "validator${a}" --keyring-backend test --home $DAEMON_HOME-${a}
 done
 
-# add accounts if any arguments passed
+# add accounts if second argument is passed
 if [ -z $ACCOUNTS ] || [ "$ACCOUNTS" -eq 0 ]
 then
-    echo "----- Accounts argument didn't pass, so not creating any accounts --------"
+    echo "----- Argument for accounts is not present, not creating any additional accounts --------"
 else
     echo "---------Creating $ACCOUNTS accounts-------------"
 
@@ -153,7 +157,7 @@ do
     $DAEMON gentx validator$a 90000000000$DENOM --chain-id $CHAINID  --keyring-backend test --home $DAEMON_HOME-$a
 done
 
-echo "---------Copy all node genesis to $DAEMON_HOME-1----------"
+echo "---------Copy all gentxs to $DAEMON_HOME-1----------"
 
 for (( a=2; a<=$NODES; a++ ))
 do
@@ -181,6 +185,11 @@ echo "---------Getting public IP address-----------"
 
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"
+
+if [ -z $IP ]
+then
+    IP=127.0.0.1
+fi
 
 for (( a=1; a<=$NODES; a++ ))
 do

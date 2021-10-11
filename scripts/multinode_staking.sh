@@ -27,6 +27,11 @@ echo "** Number of nodes mentioned : $NODES **"
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"
 
+if [ -z $IP ]
+then
+    IP=127.0.0.1
+fi
+
 echo "--------- Delegation tx -----------"
 
 for (( a=1; a<$NODES; a++ ))
@@ -75,7 +80,7 @@ do
 
     if [ $a == 1 ]
     then
-        # this tx has to fail bcz, the tx between these nodes already happened
+        # this tx has to fail as the tx between these nodes has already happened
         N=$NODES
         P=`expr $NODES - 1`
         fromValidator=$("${DAEMON}" keys show "validator${N}" --bech val --keyring-backend test --home $DAEMON_HOME-${N} --output json)

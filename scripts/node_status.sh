@@ -11,6 +11,11 @@ echo "**** Number of nodes to be check for the status: $NODES ****"
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"
 
+if [ -z $IP ]
+then
+    IP=127.0.0.1
+fi
+
 echo "------- Query node status ---------"
 
 for (( a=1; a<=$NODES; a++ ))

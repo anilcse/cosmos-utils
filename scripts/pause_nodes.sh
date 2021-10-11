@@ -6,7 +6,7 @@ then
     NODES=1
 fi
 
-echo "**** Number of nodes to be shutdown: $NODES ****"
+echo "**** Number of nodes to be paused: $NODES ****"
 
 echo
 

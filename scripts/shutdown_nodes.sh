@@ -8,17 +8,6 @@ fi
 
 echo "**** Number of nodes to be shutdown: $NODES ****"
 
-echo "------- Running unsafe reset all ---------"
-
-for (( a=1; a<=$NODES; a++ ))
-do
-    $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a
-
-    echo "-- Executed $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a --"
-done
-
-echo
-
 echo "---------- Stopping systemd service files --------"
 
 for (( a=1; a<=$NODES; a++ ))
@@ -26,6 +15,19 @@ do
     sudo -S systemctl stop $DAEMON-${a}.service
 
     echo "-- Executed sudo -S systemctl stop $DAEMON-${a}.service --"
+done
+
+echo
+
+echo "------- Running unsafe reset all ---------"
+
+for (( a=1; a<=$NODES; a++ ))
+do
+    $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a
+    
+    rm -rf ~/.$DAEMON_HOME-$a/config/gen*
+
+    echo "-- Executed $DAEMON unsafe-reset-all  --home $DAEMON_HOME-$a --"
 done
 
 echo

@@ -25,6 +25,11 @@ echo "** Number of nodes mentioned : $NODES **"
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"
 
+if [ -z $IP ]
+then
+    IP=127.0.0.1
+fi
+
 echo "--------- Run withdraw rewards tx -----------"
 
 for (( a=1; a<=$NODES; a++ ))
@@ -52,7 +57,7 @@ do
     then
         echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrtxHash ****"
     else 
-        echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is failed!!!!   txHash is : $wrtxHash and REASON : $(echo "${wrTx}" | jq '.raw_log') ****"
+        echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) failed!!!!   txHash is : $wrtxHash and REASON : $(echo "${wrTx}" | jq '.raw_log') ****"
     fi
 done
 
@@ -86,7 +91,7 @@ do
     then
         echo "**** withdraw-rewards commission of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrctxHash ****"
     else 
-        echo "**** withdraw-rewards comission of ( $VALADDRESS and key $FROMKEY ) is failed!!!!   txHash is : $wrctxHash and REASON : $(echo "${wrcTx}" | jq '.raw_log') ****"
+        echo "**** withdraw-rewards comission of ( $VALADDRESS and key $FROMKEY ) failed!!!!   txHash is : $wrctxHash and REASON : $(echo "${wrcTx}" | jq '.raw_log') ****"
     fi
 done
 
