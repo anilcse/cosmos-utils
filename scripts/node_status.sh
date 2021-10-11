@@ -28,5 +28,5 @@ do
     result=$(curl -s "${RPC}")
     height=$(echo "${result}" | jq -r '.result.sync_info.latest_block_height')
     syncStatus=$(echo "${result}" | jq -r '.result.sync_info.catching_up')
-    echo "** rpc : $RPC , latest_block_height : $height , cathing_up : $syncStatus **"
+    echo "** rpc : $RPC , latest_block_height : $height , catching_up : $syncStatus **"
 done
