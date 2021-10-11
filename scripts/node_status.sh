@@ -24,7 +24,7 @@ do
     INC=`expr $DIFF \* 2`
     PORT=`expr 16657 + $INC` #get ports
 
-    RPC= "http://${IP}:${PORT}/status?"
+    RPC="http://${IP}:${PORT}/status?"
     result=$(curl -s "${RPC}")
     height=$(echo "${result}" | jq -r '.result.sync_info.latest_block_height')
     syncStatus=$(echo "${result}" | jq -r '.result.sync_info.catching_up')
