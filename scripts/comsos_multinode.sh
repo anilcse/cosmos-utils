@@ -86,7 +86,7 @@ done
 # remove daemon home directories if already exists
 for (( a=1; a<=$NODES; a++ ))
 do
-    rm -rf ~/.$DAEMON_HOME-$a/config/gen*
+    rm -rf $DAEMON_HOME-$a
 done
 
 echo "-----Create daemon home directories------"
