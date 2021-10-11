@@ -1,11 +1,11 @@
 #/bin/sh
 
 display_usage() {
-    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n Node : $NODE\n"
+    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n"
     exit 1
 }
 
-if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ] || [ -z $NODE ]
+if [ -z $DAEMON ] || [ -z $DENOM ] || [ -z $CHAINID ]
 then 
     display_usage
 fi
@@ -22,11 +22,20 @@ fi
 
 echo "** Number of nodes mentioned : $NODES **"
 
+IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+echo "Public IP address: ${IP}"
+
 echo "--------- Run withdraw rewards tx -----------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    validator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --output json)
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    PORT=`expr 16657 + $INC` #get ports
+    RPC="http://${IP}:${PORT}"
+    echo "NODE :: $RPC"
+
+    validator=$("${DAEMON}" keys show validator${a} --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
     VALADDRESS=$(echo "${validator}" | jq -r '.address')
     FROMKEY="validator${a}"
     echo "** validator address :: $VALADDRESS and From key :: $FROMKEY **"
@@ -35,11 +44,11 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards of $FROMKEY-----------"
 
-    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test -y)
+    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     wrCode=$(echo "${wrTx}"| jq -r '.code')
     wrtxHash=$(echo "${wrTx}" | jq '.txhash')
     echo "Code is : $wrCode"
-    if [ "$wrCode" -eq 0 ];
+    if [ $wrCode -eq 0 ]
     then
         echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrtxHash ****"
     else 
@@ -53,7 +62,13 @@ echo "--------- Run withdraw-rewards commission txs -----------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    validator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --output json)
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    PORT=`expr 16657 + $INC` #get ports
+    RPC="http://${IP}:${PORT}"
+    echo " **** NODE :: $RPC  ****"
+
+    validator=$("${DAEMON}" keys show validator${a} --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
     VALADDRESS=$(echo "${validator}" | jq -r '.address')
     FROMKEY="validator${a}"
     echo "** validator address :: $VALADDRESS and From key :: $FROMKEY **"
@@ -62,12 +77,12 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards commission of $FROMKEY-----------"
 
-    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test -y)
+    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     #echo $wrTx
     wrcCode=$(echo "${wrcTx}"| jq -r '.code')
     wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
     echo "Code is : $wrcCode"
-    if [ "$wrcCode" -eq 0 ];
+    if [ $wrcCode -eq 0 ]
     then
         echo "**** withdraw-rewards commission of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrctxHash ****"
     else 
@@ -82,7 +97,13 @@ echo "--------- Run withdraw-all-rewards tx -----------"
 
 for (( a=1; a<=$NODES; a++ ))
 do
-    validator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --output json)
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    PORT=`expr 16657 + $INC` #get ports
+    RPC="http://${IP}:${PORT}"
+    echo "NODE :: $RPC"
+
+    validator=$("${DAEMON}" keys show validator${a} --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
     VALADDRESS=$(echo "${validator}" | jq -r '.address')
     FROMKEY="validator${a}"
     echo "** validator address :: $VALADDRESS and From key :: $FROMKEY **"
@@ -91,11 +112,11 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "------ withdraw-all-rewards of $FROMKEY --------"
 
-    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test -y)
+    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     warcode=$(echo "${wartx}"| jq -r '.code')
     wartxHash=$(echo "${wartx}" | jq -r '.txhash')
     echo "Code is : $warcode"
-    if [ "$warcode" -eq 0 ];
+    if [ $warcode -eq 0 ];
     then
         echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) successfull!!  txHash is : $wartxHash ****"
     else 
