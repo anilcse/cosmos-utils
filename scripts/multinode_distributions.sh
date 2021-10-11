@@ -1,7 +1,7 @@
 #/bin/sh
 
 display_usage() {
-    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n Daemon home : $DAEMON_HOME"
+    printf "** Please check the exported values:: **\n Daemon : $DAEMON\n Denom : $DENOM\n ChainID : $CHAINID\n Daemon home : $DAEMON_HOME\n"
     exit 1
 }
 

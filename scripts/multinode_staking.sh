@@ -40,7 +40,7 @@ do
     TONODE=`expr 1 + $a`
     echo "To node number : $TONODE"
 
-    validator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+    validator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${TONODE} --output json)
     VALADDRESS=$(echo "${validator}" | jq -r '.address')
 
     FROMKEY="validator${a}"
@@ -52,7 +52,7 @@ do
     echo "Iteration no $a and values of from : $FROMKEY to : $TO"
     echo "--------- Delegation from $FROMKEY to $TO-----------"
 
-    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --node $RPC -y)
+    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     dTxCode=$(echo "${dTx}"| jq -r '.code')
     dtxHash=$(echo "${dTx}" | jq '.txhash')
     echo "Code is : $dTxCode"
@@ -78,13 +78,13 @@ do
     RPC="http://${IP}:${PORT}"
     echo "NODE :: $RPC"
 
-    TONODE=`expr $a -1`
+    TONODE=`expr $a - 1`
     echo "To node number : $TONODE"
 
     fromValidator=$("${DAEMON}" keys show "validator${a}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
     FROMADDRESS=$(echo "${fromValidator}" | jq -r '.address')
 
-    toValidator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+    toValidator=$("${DAEMON}" keys show "validator${TONODE}" --bech val --keyring-backend test --home $DAEMON_HOME-${TONODE} --output json)
     TOADDRESS=$(echo "${toValidator}" | jq -r '.address')
 
     FROM=$FROMADDRESS
@@ -98,10 +98,10 @@ do
         # this tx has to fail bcz, the tx between these nodes already happened
         N=$NODES
         P=`expr $NODES -1`
-        fromValidator=$("${DAEMON}" keys show "validator${N}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+        fromValidator=$("${DAEMON}" keys show "validator${N}" --bech val --keyring-backend test --home $DAEMON_HOME-${N} --output json)
         FROMADDRESS=$(echo "${fromValidator}" | jq -r '.address')
 
-        toValidator=$("${DAEMON}" keys show "validator${P}" --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+        toValidator=$("${DAEMON}" keys show "validator${P}" --bech val --keyring-backend test --home $DAEMON_HOME-${P} --output json)
         TOADDRESS=$(echo "${toValidator}" | jq -r '.address')
 
         FROM=$FROMADDRESS
