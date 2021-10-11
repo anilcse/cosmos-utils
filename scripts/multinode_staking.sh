@@ -17,7 +17,7 @@ NODES=$1
 NODES=$1
 if [ -z $NODES ]
 then
-    NODES=5
+    NODES=2
 fi
 
 echo
