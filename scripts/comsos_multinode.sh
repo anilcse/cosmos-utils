@@ -135,6 +135,9 @@ do
     fi
     $DAEMON --home $DAEMON_HOME-$a add-genesis-account validator$a 1000000000000$DENOM  --keyring-backend test
     $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show validator$a -a --home $DAEMON_HOME-$a --keyring-backend test) 1000000000000$DENOM
+
+    # add accounts
+    $DAEMON --home $DAEMON_HOME-$a add-genesis-account account$a 1000000000000$DENOM  --keyring-backend test
 done
 
 echo "--------Gentx--------"
