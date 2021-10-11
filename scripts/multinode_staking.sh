@@ -150,7 +150,7 @@ do
 
     # Print the value
     echo "Iteration no $a and values of from : $FROM and fromKey : $FROMKEY"
-    echo "--------- Running unbond tx command------------"
+    echo "--------- Running unbond tx command of $FROM and key : $FROMKEY------------"
 
     ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
     ubTxCode=$(echo "${ubTx}"| jq -r '.code')
