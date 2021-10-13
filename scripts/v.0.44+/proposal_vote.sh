@@ -71,7 +71,7 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       txHash=$(echo "${castVote}"| jq -r '.txhash')
       echo "** TX HASH :: $txHash **"
       # query the txhash and check the code
-      txResult=$("${DAEMON}" q tx "${txHash}" --output json)
+      txResult=$("${DAEMON}" q tx "${txHash}" --node $RPC --output json)
       checkVote=$(echo "${txResult}"| jq -r '.code')
 
       if [[ "$checkVote" != "" ]];

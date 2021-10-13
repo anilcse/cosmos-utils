@@ -65,7 +65,7 @@ do
     echo "** TX HASH :: $dtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${dtxHash}" --output json)
+    txResult=$("${DAEMON} q tx ${dtxHash}" --node $RPC --output json)
     dTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $dTxCode"
@@ -136,7 +136,7 @@ do
     echo "** TX HASH :: $rdtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${rdtxHash}" --output json)
+    txResult=$("${DAEMON} q tx ${rdtxHash}" --node $RPC --output json)
     rdTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $rdTxCode"
@@ -182,7 +182,7 @@ do
     echo "** TX HASH :: $ubtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${ubtxHash}" --output json)
+    txResult=$("${DAEMON} q tx ${ubtxHash}" --node $RPC --output json)
     ubTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $ubTxCode"
