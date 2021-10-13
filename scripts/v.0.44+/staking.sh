@@ -57,13 +57,13 @@ do
     echo "Iteration no $a and values of from : $FROMKEY to : $TO"
     echo "--------- Delegation from $FROMKEY to $TO-----------"
 
-    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
-    dtxHash=$(echo "${dTx}" | jq '.txhash')
+    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
+    dtxHash=$(echo "${dTx}" | jq -r '.txhash')
 
     echo "** TX HASH :: $dtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${dtxHash}")
+    txResult=$("${DAEMON} q tx ${dtxHash}" --output json)
     dTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $dTxCode"
@@ -126,13 +126,13 @@ do
     echo "Iteration no $a and values of from : $FROMKEY to : $TOKEY"
     echo "--------- Redelegation from $FROM to $TO-----------"
 
-    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     rdtxHash=$(echo "${rdTx}" | jq '.txhash')
 
     echo "** TX HASH :: $rdtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${rdtxHash}")
+    txResult=$("${DAEMON} q tx ${rdtxHash}" --output json)
     rdTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $rdTxCode"
@@ -170,13 +170,13 @@ do
     echo "Iteration no $a and values of from : $FROM and fromKey : $FROMKEY"
     echo "--------- Running unbond tx command of $FROM and key : $FROMKEY------------"
 
-    ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     ubtxHash=$(echo "${ubTx}" | jq '.txhash')
 
     echo "** TX HASH :: $ubtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON} q tx ${ubtxHash}")
+    txResult=$("${DAEMON} q tx ${ubtxHash}" --output json)
     ubTxCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $ubTxCode"

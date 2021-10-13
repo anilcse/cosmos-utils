@@ -49,7 +49,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards of $FROMKEY-----------"
 
-    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --log_format json --output json -y)
+    wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     sleep 6s
 
     wrtxHash=$(echo "${wrTx}" | jq -r '.txhash')
@@ -57,7 +57,7 @@ do
     echo "** TX HASH :: $wrtxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON}" q tx "${wrtxHash}" --node $RPC --log_format json --output json)
+    txResult=$("${DAEMON}" q tx "${wrtxHash}" --node $RPC --output json)
     wrCode=$(echo "${txResult}"| jq -r '.code')
 
     echo "Code is : $wrCode"
@@ -90,7 +90,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "--------- withdraw-rewards commission of $FROMKEY-----------"
 
-    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --log_format json --output json -y)
+    wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     #echo $wrTx
     sleep 6s
 
@@ -99,7 +99,7 @@ do
     echo "** TX HASH :: $wrctxHash **"
 
     # query the txhash and check the code
-    txResult=$("${DAEMON}" q tx "${wrctxHash}" --node $RPC --log_format json --output json)
+    txResult=$("${DAEMON}" q tx "${wrctxHash}" --node $RPC --output json)
     wrcCode=$(echo "${txResult}"| jq -r '.code')
     
     echo "Code is : $wrcCode"
@@ -133,7 +133,7 @@ do
     echo "Iteration no $a and values of address : $VALADDRESS and key : $FROMKEY"
     echo "------ withdraw-all-rewards of $FROMKEY --------"
 
-    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --log_format json --output json -y)
+    wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     sleep 6s
 
     wartxHash=$(echo "${wartx}" | jq -r '.txhash')
@@ -141,7 +141,7 @@ do
     echo "** TX HASH :: $wartxHash **"
 
      # query the txhash and check the code
-    txResult=$("${DAEMON}" q tx "${wartxHash}" --node $RPC --log_format json --output json)
+    txResult=$("${DAEMON}" q tx "${wartxHash}" --node $RPC --output json)
     warcode=$(echo "${txResult}"| jq -r '.code')
     
     echo "Code is : $warcode"
