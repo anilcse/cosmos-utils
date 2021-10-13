@@ -66,9 +66,9 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       #cast vote
       castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test -y) 2>&1) 
       #echo "$?... $castVote"
-      checkVote=$(echo "${castVote}"| jq -r '.code')
+      checkVote=$(echo "${castVote}" | jq -r '.code')
       #echo "check vote response err : $checkVote"
-      txHash=$(echo "${castVote}"| jq -r '.txhash')
+      txHash=$(echo "${castVote}" | jq -r '.txhash')
       if [[ "$checkVote" != "" ]];
       then
         if [ "$checkVote" -eq 0 ];
