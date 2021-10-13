@@ -57,7 +57,7 @@ do
     echo "Iteration no $a and values of from : $FROMKEY to : $TO"
     echo "--------- Delegation from $FROMKEY to $TO-----------"
 
-    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     dTxCode=$(echo "${dTx}"| jq -r '.code')
     dtxHash=$(echo "${dTx}" | jq '.txhash')
     echo "Code is : $dTxCode"
@@ -120,7 +120,7 @@ do
     echo "Iteration no $a and values of from : $FROMKEY to : $TOKEY"
     echo "--------- Redelegation from $FROM to $TO-----------"
 
-    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     rdTxCode=$(echo "${rdTx}"| jq -r '.code')
     rdtxHash=$(echo "${rdTx}" | jq '.txhash')
     echo "Code is : $rdTxCode"
@@ -158,7 +158,7 @@ do
     echo "Iteration no $a and values of from : $FROM and fromKey : $FROMKEY"
     echo "--------- Running unbond tx command of $FROM and key : $FROMKEY------------"
 
-    ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC -y)
+    ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     ubTxCode=$(echo "${ubTx}"| jq -r '.code')
     ubtxHash=$(echo "${ubTx}" | jq '.txhash')
     echo "Code is : $ubTxCode"
