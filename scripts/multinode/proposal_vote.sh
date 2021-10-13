@@ -64,7 +64,7 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       voted=$(echo "${getVote}" | jq -r '.option')
       #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
       #cast vote
-      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test -y) 2>&1) 
+      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test --output json -y) 2>&1) 
       #echo "$?... $castVote"
       checkVote=$(echo "${castVote}" | jq -r '.code')
       #echo "check vote response err : $checkVote"

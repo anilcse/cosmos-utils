@@ -64,12 +64,12 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       voted=$(echo "${getVote}" | jq -r '.option')
       #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
       #cast vote
-      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test -y) 2>&1) 
+      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test --output json -y) 2>&1) 
       txHash=$(echo "${castVote}"| jq -r '.txhash')
 
       echo "** TX HASH :: $txHash **"
       # query the txhash and check the code
-      txResult=$("${DAEMON} q tx ${txHash}")
+      txResult=$("${DAEMON}" q tx "${txHash}" --output json)
       checkVote=$(echo "${txResult}"| jq -r '.code')
 
       if [[ "$checkVote" != "" ]];
