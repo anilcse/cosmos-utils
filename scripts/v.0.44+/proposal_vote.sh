@@ -65,8 +65,10 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
       #cast vote
       castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test --output json -y) 2>&1) 
-      txHash=$(echo "${castVote}"| jq -r '.txhash')
+      
+      sleep 6s
 
+      txHash=$(echo "${castVote}"| jq -r '.txhash')
       echo "** TX HASH :: $txHash **"
       # query the txhash and check the code
       txResult=$("${DAEMON}" q tx "${txHash}" --output json)
