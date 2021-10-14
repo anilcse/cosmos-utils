@@ -147,7 +147,7 @@ do
     echo "Code is : $warcode"
     if [ "$warcode" -eq 0 ];
     then
-        echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) successfull!!  txHash is : $wartxHash ****"
+        echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wartxHash ****"
     else 
         echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) failed!!!!   txHash is : $wartxHash and REASON : $(echo "${wartx}" | jq -r '.raw_log') ****"
     fi

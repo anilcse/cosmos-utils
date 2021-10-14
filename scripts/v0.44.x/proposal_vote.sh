@@ -17,7 +17,7 @@ then
     NODES=2
 fi
 
-echo "--------- No.of validators to be vote on the proposal : $NODES ------------"
+echo "--------- No.of validators who have to vote on the proposal : $NODES ------------"
 
 IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 echo "Public IP address: ${IP}"

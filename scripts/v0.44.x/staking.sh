@@ -191,7 +191,7 @@ do
     then
         echo "**** Unbond tx ( of $FROM and key $FROMKEY ) is SUCCESSFULL!!  txHash is : $ubtxHash ****"
     else 
-        echo "**** Unbond tx ( of $FROM and key $FROMKEY ) if FAILED!!!!   txHash is : $ubtxHash  and REASON : $(echo "${ubTx}" | jq '.raw_log')  ***"
+        echo "**** Unbond tx ( of $FROM and key $FROMKEY ) FAILED!!!!   txHash is : $ubtxHash  and REASON : $(echo "${ubTx}" | jq '.raw_log')  ***"
     fi
     echo
 done
