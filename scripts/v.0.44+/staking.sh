@@ -58,8 +58,16 @@ do
     echo "--------- Delegation from $FROMKEY to $TO-----------"
 
     dTx=$("${DAEMON}" tx staking delegate "${TO}" 10000"${DENOM}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
-    dTxCode=$(echo "${dTx}"| jq -r '.code')
-    dtxHash=$(echo "${dTx}" | jq '.txhash')
+    
+    sleep 6s
+
+    dtxHash=$(echo "${dTx}" | jq -r '.txhash')
+    echo "** TX HASH :: $dtxHash **"
+
+    # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${dtxHash}" --node $RPC --output json)
+    dTxCode=$(echo "${txResult}"| jq -r '.code')
+
     echo "Code is : $dTxCode"
     echo
     if [ "$dTxCode" -eq 0 ];
@@ -121,8 +129,16 @@ do
     echo "--------- Redelegation from $FROM to $TO-----------"
 
     rdTx=$("${DAEMON}" tx staking redelegate "${FROM}" "${TO}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --gas 400000 --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
-    rdTxCode=$(echo "${rdTx}"| jq -r '.code')
-    rdtxHash=$(echo "${rdTx}" | jq '.txhash')
+    
+    sleep 6s
+    
+    rdtxHash=$(echo "${rdTx}" | jq -r '.txhash')
+    echo "** TX HASH :: $rdtxHash **"
+
+    # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${rdtxHash}" --node $RPC --output json)
+    rdTxCode=$(echo "${txResult}"| jq -r '.code')
+
     echo "Code is : $rdTxCode"
     echo
     if [ "$rdTxCode" -eq 0 ];
@@ -159,8 +175,16 @@ do
     echo "--------- Running unbond tx command of $FROM and key : $FROMKEY------------"
 
     ubTx=$("${DAEMON}" tx staking unbond "${FROM}" 10000"${DENOM}" --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
-    ubTxCode=$(echo "${ubTx}"| jq -r '.code')
-    ubtxHash=$(echo "${ubTx}" | jq '.txhash')
+    
+    sleep 6s
+    
+    ubtxHash=$(echo "${ubTx}" | jq -r '.txhash')
+    echo "** TX HASH :: $ubtxHash **"
+
+    # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${ubtxHash}" --node $RPC --output json)
+    ubTxCode=$(echo "${txResult}"| jq -r '.code')
+
     echo "Code is : $ubTxCode"
     echo
     if [ "$ubTxCode" -eq 0 ];

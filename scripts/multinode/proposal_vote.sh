@@ -1,23 +1,31 @@
 #/bin/sh
 
-echo "--------- Get validator addresses -----------"
-va1=$("${DAEMON}" keys show validator1 --keyring-backend test --output json)
-v1=$(echo "${va1}" | jq -r '.address')
-echo "** validator1 address :: $v1 **"
+display_usage() {
+    printf "** Please check the exported value of:: **\n Daemon : $DAEMON\n Chain ID : $CHAINID\n"
+    exit 1
+}
 
-va2=$("${DAEMON}" keys show validator2 --keyring-backend test --output json)
-v2=$(echo "${va2}" | jq -r '.address')
-echo "** validator2 address :: $v2 **"
+if [ -z $DAEMON ] || [ -z $CHAINID ]
+then 
+    display_usage
+fi
 
-va3=$("${DAEMON}" keys show validator3 --keyring-backend test --output json)
-v3=$(echo "${va3}" | jq -r '.address')
-echo "** validator3 address :: $v3 **"
+# read no.of validators to be vote on the proposal
+NODES=$1
+if [ -z $NODES ]
+then
+    NODES=2
+fi
 
-va4=$("${DAEMON}" keys show validator4 --keyring-backend test --output json)
-v4=$(echo "${va4}" | jq -r '.address')
-echo "** validator4 address :: $v4 **"
+echo "--------- No.of validators to be vote on the proposal : $NODES ------------"
 
-echo
+IP="$(dig +short myip.opendns.com @resolver1.opendns.com)"
+echo "Public IP address: ${IP}"
+
+if [ -z $IP ]
+then
+    IP=127.0.0.1
+fi
 
 echo "--------Get voting period proposals--------------"
 vp=$("${DAEMON}" q gov proposals --status voting_period --output json)
@@ -32,24 +40,22 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
   echo
   echo "** Checking votes for proposal id : $PID **"
 
-  for a in 1 2 3 4
+  for (( a=1; a<=$NODES; a++ ))
   do
-    if [ $a == 1 ]
-    then
-      FROMKEY="validator1"
-      VOTER=$v1
-    elif [ $a == 2 ]
-    then
-      FROMKEY="validator2"
-      VOTER=$v2
-    elif [ $a == 3 ]
-    then
-      FROMKEY="validator3"
-      VOTER=$v3
-    else [ $a == 4 ]
-      VOTER=$v4
-      FROMKEY="validator4"
-    fi
+    DIFF=`expr $a - 1`
+    INC=`expr $DIFF \* 2`
+    PORT=`expr 16657 + $INC` #get ports
+    RPC="http://${IP}:${PORT}"
+    echo " **** NODE :: $RPC  ****"
+
+    # get validator address
+    validator=$("${DAEMON}" keys show validator${a} --bech val --keyring-backend test --home $DAEMON_HOME-${a} --output json)
+    VALADDRESS=$(echo "${validator}" | jq -r '.address')
+    FROMKEY="validator${a}"
+    VOTER=$VALADDRESS
+
+    echo "** voter address :: $VALADDRESS and from key :: $FROMKEY **"
+
     # Check vote status
     getVote=$( ("${DAEMON}" q gov vote "${PID}" "${VOTER}" --output json) 2>&1)
    
@@ -58,11 +64,11 @@ for row in $(echo "${vp}" | jq -r '.proposals | .[] | @base64'); do
       voted=$(echo "${getVote}" | jq -r '.option')
       #echo "*** Proposal Id : $PID and VOTER : $VOTER and VOTE OPTION : $voted ***"
       #cast vote
-      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${NODE}" -keyring-backend test -y) 2>&1) 
+      castVote=$( ("${DAEMON}" tx gov vote "${PID}" yes --from "${FROMKEY}" --fees 1000"${DENOM}" --chain-id "${CHAINID}" --node "${RPC}" --home $DAEMON_HOME-${a} --keyring-backend test --output json -y) 2>&1) 
       #echo "$?... $castVote"
-      checkVote=$(echo "${castVote}"| jq -r '.code')
+      checkVote=$(echo "${castVote}" | jq -r '.code')
       #echo "check vote response err : $checkVote"
-      txHash=$(echo "${castVote}"| jq -r '.txhash')
+      txHash=$(echo "${castVote}" | jq -r '.txhash')
       if [[ "$checkVote" != "" ]];
       then
         if [ "$checkVote" -eq 0 ];

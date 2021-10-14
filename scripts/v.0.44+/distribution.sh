@@ -50,10 +50,18 @@ do
     echo "--------- withdraw-rewards of $FROMKEY-----------"
 
     wrTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
-    wrCode=$(echo "${wrTx}"| jq -r '.code')
-    wrtxHash=$(echo "${wrTx}" | jq '.txhash')
+    sleep 6s
+
+    wrtxHash=$(echo "${wrTx}" | jq -r '.txhash')
+
+    echo "** TX HASH :: $wrtxHash **"
+
+    # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${wrtxHash}" --node $RPC --output json)
+    wrCode=$(echo "${txResult}"| jq -r '.code')
+
     echo "Code is : $wrCode"
-    if [ $wrCode -eq 0 ]
+    if [ "$wrCode" -eq 0 ]
     then
         echo "**** withdraw-rewards of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrtxHash ****"
     else 
@@ -84,10 +92,18 @@ do
 
     wrcTx=$("${DAEMON}" tx distribution withdraw-rewards "${VALADDRESS}" --from $FROMKEY --commission --fees 1000"${DENOM}" --chain-id "${CHAINID}" --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
     #echo $wrTx
-    wrcCode=$(echo "${wrcTx}"| jq -r '.code')
-    wrctxHash=$(echo "${wrcTx}" | jq '.txhash')
+    sleep 6s
+
+    wrctxHash=$(echo "${wrcTx}" | jq -r '.txhash')
+
+    echo "** TX HASH :: $wrctxHash **"
+
+    # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${wrctxHash}" --node $RPC --output json)
+    wrcCode=$(echo "${txResult}"| jq -r '.code')
+    
     echo "Code is : $wrcCode"
-    if [ $wrcCode -eq 0 ]
+    if [ "$wrcCode" -eq 0 ]
     then
         echo "**** withdraw-rewards commission of ( $VALADDRESS and key $FROMKEY ) is successfull!!  txHash is : $wrctxHash ****"
     else 
@@ -118,10 +134,18 @@ do
     echo "------ withdraw-all-rewards of $FROMKEY --------"
 
     wartx=$($DAEMON tx distribution withdraw-all-rewards --from $FROMKEY --fees 1000"${DENOM}" --chain-id $CHAINID --keyring-backend test --home $DAEMON_HOME-${a} --node $RPC --output json -y)
-    warcode=$(echo "${wartx}"| jq -r '.code')
+    sleep 6s
+
     wartxHash=$(echo "${wartx}" | jq -r '.txhash')
+
+    echo "** TX HASH :: $wartxHash **"
+
+     # query the txhash and check the code
+    txResult=$("${DAEMON}" q tx "${wartxHash}" --node $RPC --output json)
+    warcode=$(echo "${txResult}"| jq -r '.code')
+    
     echo "Code is : $warcode"
-    if [ $warcode -eq 0 ];
+    if [ "$warcode" -eq 0 ];
     then
         echo "**** withdraw-all-rewards of ( $VALADDRESS and key $FROMKEY ) successfull!!  txHash is : $wartxHash ****"
     else 

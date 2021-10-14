@@ -142,13 +142,19 @@ do
 done
 
 echo "----------Genesis creation for accounts---------"
-for (( a=1; a<=$ACCOUNTS; a++ ))
-do
-     # add accounts
-    echo "cmd ::$DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM"
 
-    $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM
-done
+if [ -z $ACCOUNTS ]
+then
+    echo "Second argument was empty, so not setting up any account\n"
+else
+    for (( a=1; a<=$ACCOUNTS; a++ ))
+    do
+        # add accounts
+        echo "cmd ::$DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM"
+
+        $DAEMON --home $DAEMON_HOME-1 add-genesis-account $($DAEMON keys show account$a -a --home $DAEMON_HOME-1 --keyring-backend test) 1000000000000$DENOM
+    done
+fi
 
 echo "--------Gentx--------"
 
