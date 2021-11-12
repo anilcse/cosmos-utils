@@ -90,3 +90,17 @@ Usage:-
  ``` 
  This script takes one argument from the user which specifies the number of nodes to shut down. If no argument is passed then just the first node is shut down.
  
+ 8) `send_load.sh`:- This script creates a load of 10,000 `send` transactions and floods the network.  
+    Usage:-
+ ```
+ chmod +x v0.42.x/send_load.sh
+ ./send_load.sh 1 2
+ ```
+ This script takes 2 arguments from the user which specifies the account number of `to` and `from` addresses. If no argument is passed then first and second address is taken by default.
+ 
+ 9) `query_load.sh`:- This script floods the network with balance queries, delegation queries and staking queries. It creates a load of 10,000 querires.
+     Usage:-
+ ```
+ chmod +x v0.42.x/query_load.sh
+ ./query_load.sh
+ ```
