@@ -20,21 +20,20 @@ Keplr is one of the widely used wallets in the cosmos ecosystem. It's non-costod
 - Once after the installation process completes, it shows `sync` across devices. You can skip it
 - You can start to interact with your browser extension by clicking on it.
 
-![](images/table 1.png?raw=true)
-![](images/table 2.png?raw=true)
-![](images/table 3.png?raw=true)
-![](images/table 4.png?raw=true)
-![](images/table 5.png?raw=true)
-![](images/table 6.png?raw=true)
-![](images/table 7.png?raw=true)
-![](images/table 8.png?raw=true)
-![](images/table 9.png?raw=true)
-![](images/table 90.png?raw=true)
-![](images/table 91.png?raw=true)
-![](images/table 92.png?raw=true)
-![](images/table 93.png?raw=true)
-![](images/table 94.png?raw=true)
-![](images/table 95.png?raw=true)
+![](./k1.png?raw=true)
+![](./k2.png?raw=true)
+![](./k3.png?raw=true)
+![](./k4.png?raw=true)
+![](./k5.png?raw=true)
+![](./k6.png?raw=true)
+![](./k7.png?raw=true)
+![](./k8.png?raw=true)
+![](./k9.png?raw=true)
+![](./k90.png?raw=true)
+![](./k91.png?raw=true)
+![](./k92.png?raw=true)
+![](./k93.png?raw=true)
+![](./k94.png?raw=true)
 
 ## How to create a Keplr account
 ### Option-1: Create a brand new account
