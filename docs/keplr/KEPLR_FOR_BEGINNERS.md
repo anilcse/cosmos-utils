@@ -12,13 +12,29 @@ Keplr is one of the widely used wallets in the cosmos ecosystem. It's non-costod
   - Please be careful of scammers and if you need help always use public channels.
   - You are your own bank: help us in assisting you in keeping it safe.
 
-# For beginners
+# Setup Keplr Wallet
 ## How to install Keplr
 - Go to this [link](https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap?hl=en) and click the [Add to Chrome] button
 - [Add “Keplr”] window will show off.
   - Here you have to choose [Add Extension]
 - Once after the installation process completes, it shows `sync` across devices. You can skip it
 - You can start to interact with your browser extension by clicking on it.
+
+![](images/table 1.png?raw=true)
+![](images/table 2.png?raw=true)
+![](images/table 3.png?raw=true)
+![](images/table 4.png?raw=true)
+![](images/table 5.png?raw=true)
+![](images/table 6.png?raw=true)
+![](images/table 7.png?raw=true)
+![](images/table 8.png?raw=true)
+![](images/table 9.png?raw=true)
+![](images/table 90.png?raw=true)
+![](images/table 91.png?raw=true)
+![](images/table 92.png?raw=true)
+![](images/table 93.png?raw=true)
+![](images/table 94.png?raw=true)
+![](images/table 95.png?raw=true)
 
 ## How to create a Keplr account
 ### Option-1: Create a brand new account
@@ -55,3 +71,15 @@ In the extension click on the silhouette in the upper-right corner, then the blu
 - If you have just downloaded Keplr extension, it’s time to set your password! Choose carefully, if possible prefer a password you’re not using in any other application, and then click [Confirm].
 - If you have used Keplr before, this step will be skipped as you have already set your password when creating/importing your first account.
 - Select [Done].
+
+
+# How to create/view your passage3d account
+- Go to https://passage3d.vitwit.com
+- Click on Connect on the top-right corner
+- It asks for [Chain Add Request], Approve it
+- Then it shows [Requesting Connection], Approve it
+- [Done]
+
+Now it will show you the address on the same page, that's your Passage3D address
+
+- For any further actions using your `Passage` account like `Send`, you can go to the keplr wallet and select [Passage] in the dropdown window. It will show the balance details and `Send` option.
