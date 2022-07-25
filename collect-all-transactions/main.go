@@ -12,7 +12,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmTypes "github.com/tendermint/tendermint/abci/types"
 )
 
 const RequestPrefix = "https://api.cosmostation.io/v1/account/new_txs/"
@@ -45,7 +44,7 @@ type TxData struct {
 	GasUsed   string              `json:"gas_used,omitempty"`
 	Tx        Txn                 `json:"tx,omitempty"`
 	Timestamp string              `json:"timestamp,omitempty"`
-	Events    []tmTypes.Event     `json:"events"`
+	// Events    []tmTypes.Event `json:"events"`
 }
 
 type Tx struct {
@@ -127,7 +126,7 @@ func collectAllTxns(address string) error {
 
 		var txs []Tx
 		if err = json.Unmarshal(body, &txs); err != nil {
-			return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+			return fmt.Errorf("Error in unmarshaling the JSON tx data: %s", err.Error())
 		}
 
 		if len(txs) == 0 {
@@ -176,7 +175,7 @@ func collectAllTxns(address string) error {
 					var amounts []AmountObj
 
 					if err = json.Unmarshal(amountBytes, &amounts); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+						return fmt.Errorf("Error in unmarshaling the JSON msg send data: %s", err.Error())
 					}
 
 					if len(messages) > 1 && i != 0 {
@@ -201,7 +200,9 @@ func collectAllTxns(address string) error {
 					}
 				}
 
-				if msg["@type"] == "/cosmos.staking.v1beta1.MsgDelegate" {
+				if msg["@type"] == "/cosmos.staking.v1beta1.MsgDelegate" ||
+					msg["@type"] == "/cosmos.staking.v1beta1.MsgUndelegate" ||
+					msg["@type"] == "/cosmos.staking.v1beta1.MsgBeginRedelegate" {
 					var arrLog []Log
 					amount := msg["amount"]
 					amountBytes, err := json.Marshal(amount)
@@ -212,14 +213,14 @@ func collectAllTxns(address string) error {
 					var amounts AmountObj
 
 					if err = json.Unmarshal(amountBytes, &amounts); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+						return fmt.Errorf("Error in unmarshaling the JSON delete data: %s", err.Error())
 					}
 
 					if len(messages) > 1 && i != 0 {
 						var rewards string
 
 						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+							return fmt.Errorf("Error in unmarshaling the JSON delegate logs data: %s", err.Error())
 						}
 
 						log := arrLog[i]
@@ -263,29 +264,30 @@ func collectAllTxns(address string) error {
 						var rewards string
 
 						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+							return fmt.Errorf("Error in unmarshaling the JSON delegate logs single data: %s", err.Error())
 						}
 
-						log := arrLog[i]
 						var found bool
 						var index int
-
-						for lI, e := range log.Events {
-							if e.Type == "transfer" {
-								for _, a := range e.Attributes {
-									if a.Key == "recipient" && a.Value == address {
-										index = lI
-										found = true
+						if len(arrLog) > 0 {
+							log := arrLog[i]
+							for lI, e := range log.Events {
+								if e.Type == "transfer" {
+									for _, a := range e.Attributes {
+										if a.Key == "recipient" && a.Value == address {
+											index = lI
+											found = true
+										}
 									}
 								}
 							}
-						}
 
-						if found {
-							attrs := log.Events[index]
-							for _, atV := range attrs.Attributes {
-								if atV.Key == "amount" {
-									rewards = atV.Value
+							if found {
+								attrs := log.Events[index]
+								for _, atV := range attrs.Attributes {
+									if atV.Key == "amount" {
+										rewards = atV.Value
+									}
 								}
 							}
 						}
@@ -294,205 +296,6 @@ func collectAllTxns(address string) error {
 							fmt.Sprintf("%v", msg["@type"]),
 							fmt.Sprintf("%v", msg["delegator_address"]),
 							fmt.Sprintf("%v", msg["validator_address"]),
-							amounts.Amount,
-							"",
-							rewards,
-						}...)
-					}
-				}
-
-				if msg["@type"] == "/cosmos.staking.v1beta1.MsgUndelegate" {
-					var arrLog []Log
-
-					amount := msg["amount"]
-					amountBytes, err := json.Marshal(amount)
-					if err != nil {
-						return fmt.Errorf("Error in marshaling Tx: %s", err.Error())
-					}
-
-					var amounts AmountObj
-
-					if err = json.Unmarshal(amountBytes, &amounts); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-					}
-
-					if len(messages) > 1 && i != 0 {
-						var rewards string
-
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-
-						log := arrLog[i]
-						var found bool
-						var index int
-
-						for lI, e := range log.Events {
-							if e.Type == "transfer" {
-								for _, a := range e.Attributes {
-									if a.Key == "recipient" && a.Value == address {
-										index = lI
-										found = true
-									}
-								}
-							}
-						}
-
-						if found {
-							attrs := log.Events[index]
-							for _, atV := range attrs.Attributes {
-								if atV.Key == "amount" {
-									rewards = atV.Value
-								}
-							}
-						}
-
-						data1 := []string{"", "", "", "", "", "",
-							"", "", "", "", "", "", "", "", "",
-							fmt.Sprintf("%v", msg["@type"]),
-							fmt.Sprintf("%v", msg["delegator_address"]),
-							fmt.Sprintf("%v", msg["validator_address"]),
-							amounts.Amount,
-							"",
-							rewards,
-						}
-
-						if err = writer.Write(data1); err != nil {
-							return fmt.Errorf("Error in writing data: %s", err.Error())
-						}
-					} else {
-						var rewards string
-
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-
-						log := arrLog[i]
-						var found bool
-						var index int
-
-						for lI, e := range log.Events {
-							if e.Type == "transfer" {
-								for _, a := range e.Attributes {
-									if a.Key == "recipient" && a.Value == address {
-										index = lI
-										found = true
-									}
-								}
-							}
-						}
-
-						if found {
-							attrs := log.Events[index]
-							for _, atV := range attrs.Attributes {
-								if atV.Key == "amount" {
-									rewards = atV.Value
-								}
-							}
-						}
-
-						data = append(data, []string{
-							fmt.Sprintf("%v", msg["@type"]),
-							fmt.Sprintf("%v", msg["delegator_address"]),
-							fmt.Sprintf("%v", msg["validator_address"]),
-							amounts.Amount,
-							"",
-							rewards,
-						}...)
-					}
-				}
-
-				if msg["@type"] == "/cosmos.staking.v1beta1.MsgBeginRedelegate" {
-					var arrLog []Log
-					amount := msg["amount"]
-					amountBytes, err := json.Marshal(amount)
-					if err != nil {
-						return fmt.Errorf("Error in marshaling Tx: %s", err.Error())
-					}
-
-					var amounts AmountObj
-
-					if err = json.Unmarshal(amountBytes, &amounts); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-					}
-
-					if len(messages) > 1 && i != 0 {
-						var rewards string
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-
-						log := arrLog[i]
-						var found bool
-						var index int
-
-						for lI, e := range log.Events {
-							if e.Type == "transfer" {
-								for _, a := range e.Attributes {
-									if a.Key == "recipient" && a.Value == address {
-										index = lI
-										found = true
-									}
-								}
-							}
-						}
-
-						if found {
-							attrs := log.Events[index]
-							for _, atV := range attrs.Attributes {
-								if atV.Key == "amount" {
-									rewards = atV.Value
-								}
-							}
-						}
-
-						data1 := []string{"", "", "", "", "", "",
-							"", "", "", "", "", "", "", "", "",
-							fmt.Sprintf("%v", msg["@type"]),
-							fmt.Sprintf("%v", msg["delegator_address"]),
-							fmt.Sprintf("%v", msg["validator_dst_address"]),
-							amounts.Amount,
-							"",
-							rewards,
-						}
-
-						if err = writer.Write(data1); err != nil {
-							return fmt.Errorf("Error in writing data: %s", err.Error())
-						}
-					} else {
-						var rewards string
-
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
-							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-						log := arrLog[i]
-						var found bool
-						var index int
-
-						for lI, e := range log.Events {
-							if e.Type == "transfer" {
-								for _, a := range e.Attributes {
-									if a.Key == "recipient" && a.Value == address {
-										index = lI
-										found = true
-									}
-								}
-							}
-						}
-
-						if found {
-							attrs := log.Events[index]
-							for _, atV := range attrs.Attributes {
-								if atV.Key == "amount" {
-									rewards = atV.Value
-								}
-							}
-						}
-
-						data = append(data, []string{
-							fmt.Sprintf("%v", msg["@type"]),
-							fmt.Sprintf("%v", msg["delegator_address"]),
-							fmt.Sprintf("%v", msg["validator_dst_address"]),
 							amounts.Amount,
 							"",
 							rewards,
@@ -510,7 +313,7 @@ func collectAllTxns(address string) error {
 					var amounts AmountObj
 
 					if err = json.Unmarshal(amountBytes, &amounts); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
+						return fmt.Errorf("Error in unmarshaling the JSON transfer data: %s", err.Error())
 					}
 
 					if len(messages) > 1 && i != 0 {
@@ -555,25 +358,11 @@ func collectAllTxns(address string) error {
 				}
 
 				if msg["@type"] == "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward" {
-					var arrLog []Log
-
-					if err = json.Unmarshal(logs, &arrLog); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-					}
-
 					if len(messages) > 1 && i != 0 {
-						var amount string
+						amount, err := GetWithdrawAmount(logs, i, "withdraw_rewards", "amount")
 
-						log := arrLog[i]
-
-						for _, e := range log.Events {
-							if e.Type == "withdraw_rewards" {
-								for _, a := range e.Attributes {
-									if a.Key == "amount" {
-										amount = a.Value
-									}
-								}
-							}
+						if err != nil {
+							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
 						}
 
 						data1 := []string{"", "", "", "", "", "",
@@ -588,18 +377,10 @@ func collectAllTxns(address string) error {
 							return fmt.Errorf("Error in writing data: %s", err.Error())
 						}
 					} else {
-						var amount string
+						amount, err := GetWithdrawAmount(logs, i, "withdraw_rewards", "amount")
 
-						log := arrLog[i]
-
-						for _, e := range log.Events {
-							if e.Type == "withdraw_rewards" {
-								for _, a := range e.Attributes {
-									if a.Key == "amount" {
-										amount = a.Value
-									}
-								}
-							}
+						if err != nil {
+							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
 						}
 
 						data = append(data, []string{
@@ -612,28 +393,12 @@ func collectAllTxns(address string) error {
 				}
 
 				if msg["@type"] == "/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission" {
-					var arrLog []Log
-
-					if err = json.Unmarshal(logs, &arrLog); err != nil {
-						return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-					}
 
 					if len(messages) > 1 && i != 0 {
-						var amount string
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
+						amount, err := GetWithdrawAmount(logs, i, "withdraw_commission", "amount")
+
+						if err != nil {
 							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-
-						log := arrLog[i]
-
-						for _, e := range log.Events {
-							if e.Type == "withdraw_commission" {
-								for _, a := range e.Attributes {
-									if a.Key == "amount" {
-										amount = a.Value
-									}
-								}
-							}
 						}
 
 						data1 := []string{"", "", "", "", "", "",
@@ -649,21 +414,10 @@ func collectAllTxns(address string) error {
 							return fmt.Errorf("Error in writing data: %s", err.Error())
 						}
 					} else {
-						var amount string
+						amount, err := GetWithdrawAmount(logs, i, "withdraw_commission", "amount")
 
-						if err = json.Unmarshal(logs, &arrLog); err != nil {
+						if err != nil {
 							return fmt.Errorf("Error in unmarshaling the JSON data: %s", err.Error())
-						}
-						log := arrLog[i]
-
-						for _, e := range log.Events {
-							if e.Type == "withdraw_rewards" {
-								for _, a := range e.Attributes {
-									if a.Key == "amount" {
-										amount = a.Value
-									}
-								}
-							}
 						}
 
 						data = append(data, []string{
@@ -687,6 +441,33 @@ func collectAllTxns(address string) error {
 	}
 
 	return nil
+}
+
+func GetWithdrawAmount(logs []byte, i int, input1 string,
+	input2 string) (string, error) {
+	var arrLog []Log
+
+	var amount string
+	if err := json.Unmarshal(logs, &arrLog); err != nil {
+		return "", fmt.Errorf("Error in unmarshaling the JSON withdraw amount data: %s", err.Error())
+	}
+
+	if len(arrLog) > 0 {
+		log := arrLog[i]
+
+		for _, e := range log.Events {
+			if e.Type == input1 {
+				for _, a := range e.Attributes {
+					if a.Key == input2 {
+						amount = a.Value
+					}
+				}
+			}
+		}
+
+	}
+
+	return amount, nil
 }
 
 func main() {
