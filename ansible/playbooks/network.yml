@@ -1,0 +1,21 @@
+---
+- name: Node setup
+  hosts: all
+  tasks:
+    - name: Install deps
+      include_role:
+        name: roles/install-deps
+        apply: 
+          tags: always
+      tags: 
+        - install_deps
+
+    - name: Install binary
+      include_role: 
+        name: roles/install-binary
+        apply:
+          tags: always
+      tags: 
+        - Build
+
+    
