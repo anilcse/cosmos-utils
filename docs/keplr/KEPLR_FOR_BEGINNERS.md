@@ -81,7 +81,7 @@ In the extension click on the silhouette in the upper-right corner, then the blu
 
 # How to create/view your passage3d account
 
-- Go to https://passage3d.vitwit.com
+- Go to https://airdrop.passage3d.com
 <img src="./k96.png" width=500 height=300>
 
 - Click on Connect on the top-right corner. It asks for [Chain Add Request], Approve it
