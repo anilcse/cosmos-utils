@@ -1,4 +1,6 @@
-# cosmos-testnet-utils
+# cosmos-utils
+This repo contains multiple utility scripts to use/test cosmos based applications.
+
 
 ## Test an on-chain upgrade
 
