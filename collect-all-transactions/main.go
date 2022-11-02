@@ -14,7 +14,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const RequestPrefix = "https://api.cosmostation.io/v1/account/new_txs/"
+const RequestPrefix = "https://api-osmosis.cosmostation.io/v1/account/new_txs/"
+
+//"https://api.cosmostation.io/v1/account/new_txs/"
 
 type TxHeader struct {
 	ID        int    `json:"id"`
@@ -112,9 +114,15 @@ func collectAllTxns(address string) error {
 	}
 
 	for {
-		req := RequestPrefix + address + "?limit=20&from=" + fromId
-		log.Infof("Compiled request: %s", req)
-		resp, err := http.Get(req)
+		url := RequestPrefix + address + "?limit=20&from=" + fromId
+
+		client := &http.Client{}
+		req, err := http.NewRequest("GET", url, nil)
+		// ...
+		req.Header.Add("Origin", `https://www.mintscan.io`)
+		req.Header.Add("Referer", `https://www.mintscan.io/`)
+		resp, err := client.Do(req)
+		//resp, err := http.Get(req)
 		if err != nil {
 			return fmt.Errorf("Error in fetching the txn data: %s", err.Error())
 		}
