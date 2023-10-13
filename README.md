@@ -1,12 +1,14 @@
-# cosmos-testnet-utils
+# cosmos-utils
+This repo contains multiple utility scripts to use/test cosmos based applications.
+
 
 ## Test an on-chain upgrade
 
 Clone the repo
 ```sh
-git clone https://github.com/anilCSE/cosmos-testnet-utils.git
+git clone https://github.com/vitwit/cosmos-utils.git
 
-cd cosmos-testnet-utils
+cd cosmos-utils
 ```
 
 #### Set executable permissions

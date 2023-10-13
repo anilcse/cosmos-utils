@@ -1,0 +1,56 @@
+---
+# Installing deps
+
+- name: apt-get update
+  apt: 
+    update_cache: yes
+  become: true
+
+- name: build-essential
+  action: apt pkg=build-essential
+  become: true
+
+- name: libssl-dev
+  action: apt pkg=libssl-dev
+  become: true
+
+- name: libseccomp-dev
+  action: apt pkg=libseccomp-dev
+  become: true
+
+- name: pkg-config
+  action: apt pkg=pkg-config
+  become: true
+
+- name: jq
+  action: apt pkg=jq
+  become: true
+  
+- name: git
+  action: apt pkg=git
+  become: true
+
+- name: make
+  action: apt pkg=make
+  become: true
+  
+- name: netstat
+  action: apt pkg=netstat-tools
+  become: true
+
+
+- name: Download go script
+  get_url:
+  url: https://gist.githubusercontent.com/kaustubhkapatral/e0ee6100acb42bd9d4d97f067f7ce3eb/raw/30f9b7eca627986610ec9bafa217341df85502ed/go.sh
+  dest: "{{ ansible_env.HOME }}/go.sh"
+  mode: '0755'
+
+- name: Run go.sh
+  command: bash go.sh
+    args: 
+      chdir: "{{ ansible_env.HOME }}"
+
+- name: Remove go.sh
+  file:
+    path: "{{ ansible_env.HOME }}/go.sh"
+    state: absent
